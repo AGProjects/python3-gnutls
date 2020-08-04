@@ -1,9 +1,85 @@
-
 import sys
-from ctypes import *
+from ctypes import c_int, c_char_p, POINTER, c_uint, c_void_p, c_ubyte
 
 from gnutls.library import libgnutls
-from gnutls.library.types import *
+
+from gnutls.library.types import (
+    gnutls_aead_cipher_hd_t,
+    gnutls_alert_description_t,
+    gnutls_alert_level_t,
+    gnutls_alloc_function,
+    gnutls_anon_client_credentials_t,
+    gnutls_anon_server_credentials_t,
+    gnutls_certificate_credentials_t,
+    gnutls_certificate_print_formats_t,
+    gnutls_certificate_request_t,
+    gnutls_certificate_retrieve_function,
+    gnutls_certificate_type_t,
+    gnutls_cipher_algorithm_t,
+    gnutls_cipher_hd_t,
+    gnutls_close_request_t,
+    gnutls_compression_method_t,
+    gnutls_connection_end_t,
+    gnutls_credentials_type_t,
+    gnutls_datum_t,
+    gnutls_db_remove_func,
+    gnutls_db_retr_func,
+    gnutls_db_store_func,
+    gnutls_dh_params_t,
+    gnutls_digest_algorithm_t,
+    gnutls_free_function,
+    gnutls_handshake_description_t,
+    gnutls_handshake_post_client_hello_func,
+    gnutls_is_secure_function,
+    gnutls_kx_algorithm_t,
+    gnutls_log_func,
+    gnutls_mac_algorithm_t,
+    gnutls_openpgp_crt_fmt_t,
+    gnutls_openpgp_crt_status_t,
+    gnutls_openpgp_crt_t,
+    gnutls_openpgp_keyring_t,
+    gnutls_openpgp_privkey_t,
+    gnutls_openpgp_recv_key_func,
+    gnutls_params_function,
+    gnutls_pk_algorithm_t,
+    gnutls_pkcs7_attrs_t,
+    gnutls_pkcs7_signature_info_st,
+    gnutls_pkcs7_t,
+    gnutls_priority_t,
+    gnutls_privkey_t,
+    gnutls_protocol_t,
+    gnutls_psk_client_credentials_function,
+    gnutls_psk_client_credentials_t,
+    gnutls_psk_key_flags,
+    gnutls_psk_server_credentials_function,
+    gnutls_psk_server_credentials_t,
+    gnutls_pubkey_t,
+    gnutls_pull_func,
+    gnutls_push_func,
+    gnutls_realloc_function,
+    gnutls_server_name_type_t,
+    gnutls_session_t,
+    gnutls_sign_algorithm_t,
+    gnutls_srp_client_credentials_function,
+    gnutls_srp_client_credentials_t,
+    gnutls_srp_server_credentials_function,
+    gnutls_srp_server_credentials_t,
+    gnutls_supplemental_data_format_type_t,
+    gnutls_transport_ptr_t,
+    gnutls_typed_vdata_st,
+    gnutls_x509_ava_st,
+    gnutls_x509_crl_t,
+    gnutls_x509_crq_t,
+    gnutls_x509_crt_fmt_t,
+    gnutls_x509_crt_t,
+    gnutls_x509_dn_t,
+    gnutls_x509_privkey_t,
+    gnutls_x509_subject_alt_name_t,
+    gnutls_x509_trust_list_t,
+    size_t,
+    ssize_t,
+    time_t,
+)
 
 
 # Functions
@@ -18,19 +94,31 @@ gnutls_alert_get_name.argtypes = [gnutls_alert_description_t]
 gnutls_alert_get_name.restype = c_char_p
 
 gnutls_alert_send = libgnutls.gnutls_alert_send
-gnutls_alert_send.argtypes = [gnutls_session_t, gnutls_alert_level_t, gnutls_alert_description_t]
+gnutls_alert_send.argtypes = [
+    gnutls_session_t,
+    gnutls_alert_level_t,
+    gnutls_alert_description_t,
+]
 gnutls_alert_send.restype = c_int
 
 gnutls_alert_send_appropriate = libgnutls.gnutls_alert_send_appropriate
 gnutls_alert_send_appropriate.argtypes = [gnutls_session_t, c_int]
 gnutls_alert_send_appropriate.restype = c_int
 
-gnutls_anon_allocate_client_credentials = libgnutls.gnutls_anon_allocate_client_credentials
-gnutls_anon_allocate_client_credentials.argtypes = [POINTER(gnutls_anon_client_credentials_t)]
+gnutls_anon_allocate_client_credentials = (
+    libgnutls.gnutls_anon_allocate_client_credentials
+)
+gnutls_anon_allocate_client_credentials.argtypes = [
+    POINTER(gnutls_anon_client_credentials_t)
+]
 gnutls_anon_allocate_client_credentials.restype = c_int
 
-gnutls_anon_allocate_server_credentials = libgnutls.gnutls_anon_allocate_server_credentials
-gnutls_anon_allocate_server_credentials.argtypes = [POINTER(gnutls_anon_server_credentials_t)]
+gnutls_anon_allocate_server_credentials = (
+    libgnutls.gnutls_anon_allocate_server_credentials
+)
+gnutls_anon_allocate_server_credentials.argtypes = [
+    POINTER(gnutls_anon_server_credentials_t)
+]
 gnutls_anon_allocate_server_credentials.restype = c_int
 
 gnutls_anon_free_client_credentials = libgnutls.gnutls_anon_free_client_credentials
@@ -42,15 +130,26 @@ gnutls_anon_free_server_credentials.argtypes = [gnutls_anon_server_credentials_t
 gnutls_anon_free_server_credentials.restype = None
 
 gnutls_anon_set_params_function = libgnutls.gnutls_anon_set_params_function
-gnutls_anon_set_params_function.argtypes = [gnutls_anon_server_credentials_t, gnutls_params_function]
+gnutls_anon_set_params_function.argtypes = [
+    gnutls_anon_server_credentials_t,
+    gnutls_params_function,
+]
 gnutls_anon_set_params_function.restype = None
 
 gnutls_anon_set_server_dh_params = libgnutls.gnutls_anon_set_server_dh_params
-gnutls_anon_set_server_dh_params.argtypes = [gnutls_anon_server_credentials_t, gnutls_dh_params_t]
+gnutls_anon_set_server_dh_params.argtypes = [
+    gnutls_anon_server_credentials_t,
+    gnutls_dh_params_t,
+]
 gnutls_anon_set_server_dh_params.restype = None
 
-gnutls_anon_set_server_params_function = libgnutls.gnutls_anon_set_server_params_function
-gnutls_anon_set_server_params_function.argtypes = [gnutls_anon_server_credentials_t, gnutls_params_function]
+gnutls_anon_set_server_params_function = (
+    libgnutls.gnutls_anon_set_server_params_function
+)
+gnutls_anon_set_server_params_function.argtypes = [
+    gnutls_anon_server_credentials_t,
+    gnutls_params_function,
+]
 gnutls_anon_set_server_params_function.restype = None
 
 gnutls_auth_client_get_type = libgnutls.gnutls_auth_client_get_type
@@ -69,27 +168,46 @@ gnutls_bye = libgnutls.gnutls_bye
 gnutls_bye.argtypes = [gnutls_session_t, gnutls_close_request_t]
 gnutls_bye.restype = c_int
 
-gnutls_certificate_activation_time_peers = libgnutls.gnutls_certificate_activation_time_peers
+gnutls_certificate_activation_time_peers = (
+    libgnutls.gnutls_certificate_activation_time_peers
+)
 gnutls_certificate_activation_time_peers.argtypes = [gnutls_session_t]
 gnutls_certificate_activation_time_peers.restype = time_t
-gnutls_certificate_activation_time_peers.errmsg = "cannot get certificate activation time"
+gnutls_certificate_activation_time_peers.errmsg = (
+    "cannot get certificate activation time"
+)
 
-gnutls_certificate_allocate_credentials = libgnutls.gnutls_certificate_allocate_credentials
-gnutls_certificate_allocate_credentials.argtypes = [POINTER(gnutls_certificate_credentials_t)]
+gnutls_certificate_allocate_credentials = (
+    libgnutls.gnutls_certificate_allocate_credentials
+)
+gnutls_certificate_allocate_credentials.argtypes = [
+    POINTER(gnutls_certificate_credentials_t)
+]
 gnutls_certificate_allocate_credentials.restype = c_int
 
-gnutls_certificate_client_get_request_status = libgnutls.gnutls_certificate_client_get_request_status
+gnutls_certificate_client_get_request_status = (
+    libgnutls.gnutls_certificate_client_get_request_status
+)
 gnutls_certificate_client_get_request_status.argtypes = [gnutls_session_t]
 gnutls_certificate_client_get_request_status.restype = c_int
 
-gnutls_certificate_set_retrieve_function = libgnutls.gnutls_certificate_set_retrieve_function
-gnutls_certificate_set_retrieve_function.argtypes = [gnutls_certificate_credentials_t, gnutls_certificate_retrieve_function]
+gnutls_certificate_set_retrieve_function = (
+    libgnutls.gnutls_certificate_set_retrieve_function
+)
+gnutls_certificate_set_retrieve_function.argtypes = [
+    gnutls_certificate_credentials_t,
+    gnutls_certificate_retrieve_function,
+]
 gnutls_certificate_set_retrieve_function.restype = None
 
-gnutls_certificate_expiration_time_peers = libgnutls.gnutls_certificate_expiration_time_peers
+gnutls_certificate_expiration_time_peers = (
+    libgnutls.gnutls_certificate_expiration_time_peers
+)
 gnutls_certificate_expiration_time_peers.argtypes = [gnutls_session_t]
 gnutls_certificate_expiration_time_peers.restype = time_t
-gnutls_certificate_expiration_time_peers.errmsg = "cannot get certificate expiration time"
+gnutls_certificate_expiration_time_peers.errmsg = (
+    "cannot get certificate expiration time"
+)
 
 gnutls_certificate_free_ca_names = libgnutls.gnutls_certificate_free_ca_names
 gnutls_certificate_free_ca_names.argtypes = [gnutls_certificate_credentials_t]
@@ -119,68 +237,136 @@ gnutls_certificate_get_peers = libgnutls.gnutls_certificate_get_peers
 gnutls_certificate_get_peers.argtypes = [gnutls_session_t, POINTER(c_uint)]
 gnutls_certificate_get_peers.restype = POINTER(gnutls_datum_t)
 
-gnutls_certificate_send_x509_rdn_sequence = libgnutls.gnutls_certificate_send_x509_rdn_sequence
+gnutls_certificate_send_x509_rdn_sequence = (
+    libgnutls.gnutls_certificate_send_x509_rdn_sequence
+)
 gnutls_certificate_send_x509_rdn_sequence.argtypes = [gnutls_session_t, c_int]
 gnutls_certificate_send_x509_rdn_sequence.restype = None
 
 gnutls_certificate_server_set_request = libgnutls.gnutls_certificate_server_set_request
-gnutls_certificate_server_set_request.argtypes = [gnutls_session_t, gnutls_certificate_request_t]
+gnutls_certificate_server_set_request.argtypes = [
+    gnutls_session_t,
+    gnutls_certificate_request_t,
+]
 gnutls_certificate_server_set_request.restype = None
 
 gnutls_certificate_set_dh_params = libgnutls.gnutls_certificate_set_dh_params
-gnutls_certificate_set_dh_params.argtypes = [gnutls_certificate_credentials_t, gnutls_dh_params_t]
+gnutls_certificate_set_dh_params.argtypes = [
+    gnutls_certificate_credentials_t,
+    gnutls_dh_params_t,
+]
 gnutls_certificate_set_dh_params.restype = None
 
-gnutls_certificate_set_params_function = libgnutls.gnutls_certificate_set_params_function
-gnutls_certificate_set_params_function.argtypes = [gnutls_certificate_credentials_t, gnutls_params_function]
+gnutls_certificate_set_params_function = (
+    libgnutls.gnutls_certificate_set_params_function
+)
+gnutls_certificate_set_params_function.argtypes = [
+    gnutls_certificate_credentials_t,
+    gnutls_params_function,
+]
 gnutls_certificate_set_params_function.restype = None
 
 gnutls_certificate_set_verify_flags = libgnutls.gnutls_certificate_set_verify_flags
-gnutls_certificate_set_verify_flags.argtypes = [gnutls_certificate_credentials_t, c_uint]
+gnutls_certificate_set_verify_flags.argtypes = [
+    gnutls_certificate_credentials_t,
+    c_uint,
+]
 gnutls_certificate_set_verify_flags.restype = None
 
 gnutls_certificate_set_verify_limits = libgnutls.gnutls_certificate_set_verify_limits
-gnutls_certificate_set_verify_limits.argtypes = [gnutls_certificate_credentials_t, c_uint, c_uint]
+gnutls_certificate_set_verify_limits.argtypes = [
+    gnutls_certificate_credentials_t,
+    c_uint,
+    c_uint,
+]
 gnutls_certificate_set_verify_limits.restype = None
 
 gnutls_certificate_set_x509_crl = libgnutls.gnutls_certificate_set_x509_crl
-gnutls_certificate_set_x509_crl.argtypes = [gnutls_certificate_credentials_t, POINTER(gnutls_x509_crl_t), c_int]
+gnutls_certificate_set_x509_crl.argtypes = [
+    gnutls_certificate_credentials_t,
+    POINTER(gnutls_x509_crl_t),
+    c_int,
+]
 gnutls_certificate_set_x509_crl.restype = c_int
 
 gnutls_certificate_set_x509_crl_file = libgnutls.gnutls_certificate_set_x509_crl_file
-gnutls_certificate_set_x509_crl_file.argtypes = [gnutls_certificate_credentials_t, c_char_p, gnutls_x509_crt_fmt_t]
+gnutls_certificate_set_x509_crl_file.argtypes = [
+    gnutls_certificate_credentials_t,
+    c_char_p,
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_certificate_set_x509_crl_file.restype = c_int
 
 gnutls_certificate_set_x509_crl_mem = libgnutls.gnutls_certificate_set_x509_crl_mem
-gnutls_certificate_set_x509_crl_mem.argtypes = [gnutls_certificate_credentials_t, POINTER(gnutls_datum_t), gnutls_x509_crt_fmt_t]
+gnutls_certificate_set_x509_crl_mem.argtypes = [
+    gnutls_certificate_credentials_t,
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_certificate_set_x509_crl_mem.restype = c_int
 
 gnutls_certificate_set_x509_key = libgnutls.gnutls_certificate_set_x509_key
-gnutls_certificate_set_x509_key.argtypes = [gnutls_certificate_credentials_t, POINTER(gnutls_x509_crt_t), c_int, gnutls_x509_privkey_t]
+gnutls_certificate_set_x509_key.argtypes = [
+    gnutls_certificate_credentials_t,
+    POINTER(gnutls_x509_crt_t),
+    c_int,
+    gnutls_x509_privkey_t,
+]
 gnutls_certificate_set_x509_key.restype = c_int
 
 gnutls_certificate_set_x509_key_file = libgnutls.gnutls_certificate_set_x509_key_file
-gnutls_certificate_set_x509_key_file.argtypes = [gnutls_certificate_credentials_t, c_char_p, c_char_p, gnutls_x509_crt_fmt_t]
+gnutls_certificate_set_x509_key_file.argtypes = [
+    gnutls_certificate_credentials_t,
+    c_char_p,
+    c_char_p,
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_certificate_set_x509_key_file.restype = c_int
 
 gnutls_certificate_set_x509_key_mem = libgnutls.gnutls_certificate_set_x509_key_mem
-gnutls_certificate_set_x509_key_mem.argtypes = [gnutls_certificate_credentials_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), gnutls_x509_crt_fmt_t]
+gnutls_certificate_set_x509_key_mem.argtypes = [
+    gnutls_certificate_credentials_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_certificate_set_x509_key_mem.restype = c_int
 
-gnutls_certificate_set_x509_simple_pkcs12_file = libgnutls.gnutls_certificate_set_x509_simple_pkcs12_file
-gnutls_certificate_set_x509_simple_pkcs12_file.argtypes = [gnutls_certificate_credentials_t, c_char_p, gnutls_x509_crt_fmt_t, c_char_p]
+gnutls_certificate_set_x509_simple_pkcs12_file = (
+    libgnutls.gnutls_certificate_set_x509_simple_pkcs12_file
+)
+gnutls_certificate_set_x509_simple_pkcs12_file.argtypes = [
+    gnutls_certificate_credentials_t,
+    c_char_p,
+    gnutls_x509_crt_fmt_t,
+    c_char_p,
+]
 gnutls_certificate_set_x509_simple_pkcs12_file.restype = c_int
 
 gnutls_certificate_set_x509_trust = libgnutls.gnutls_certificate_set_x509_trust
-gnutls_certificate_set_x509_trust.argtypes = [gnutls_certificate_credentials_t, POINTER(gnutls_x509_crt_t), c_int]
+gnutls_certificate_set_x509_trust.argtypes = [
+    gnutls_certificate_credentials_t,
+    POINTER(gnutls_x509_crt_t),
+    c_int,
+]
 gnutls_certificate_set_x509_trust.restype = c_int
 
-gnutls_certificate_set_x509_trust_file = libgnutls.gnutls_certificate_set_x509_trust_file
-gnutls_certificate_set_x509_trust_file.argtypes = [gnutls_certificate_credentials_t, c_char_p, gnutls_x509_crt_fmt_t]
+gnutls_certificate_set_x509_trust_file = (
+    libgnutls.gnutls_certificate_set_x509_trust_file
+)
+gnutls_certificate_set_x509_trust_file.argtypes = [
+    gnutls_certificate_credentials_t,
+    c_char_p,
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_certificate_set_x509_trust_file.restype = c_int
 
 gnutls_certificate_set_x509_trust_mem = libgnutls.gnutls_certificate_set_x509_trust_mem
-gnutls_certificate_set_x509_trust_mem.argtypes = [gnutls_certificate_credentials_t, POINTER(gnutls_datum_t), gnutls_x509_crt_fmt_t]
+gnutls_certificate_set_x509_trust_mem.argtypes = [
+    gnutls_certificate_credentials_t,
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_certificate_set_x509_trust_mem.restype = c_int
 
 gnutls_certificate_type_get = libgnutls.gnutls_certificate_type_get
@@ -204,7 +390,11 @@ gnutls_certificate_verify_peers2.argtypes = [gnutls_session_t, POINTER(c_uint)]
 gnutls_certificate_verify_peers2.restype = c_int
 
 gnutls_certificate_verify_peers3 = libgnutls.gnutls_certificate_verify_peers3
-gnutls_certificate_verify_peers3.argtypes = [gnutls_session_t, c_char_p, POINTER(c_uint)]
+gnutls_certificate_verify_peers3.argtypes = [
+    gnutls_session_t,
+    c_char_p,
+    POINTER(c_uint),
+]
 gnutls_certificate_verify_peers3.restype = c_int
 
 gnutls_check_version = libgnutls.gnutls_check_version
@@ -232,11 +422,22 @@ gnutls_cipher_list.argtypes = []
 gnutls_cipher_list.restype = POINTER(gnutls_cipher_algorithm_t)
 
 gnutls_cipher_suite_get_name = libgnutls.gnutls_cipher_suite_get_name
-gnutls_cipher_suite_get_name.argtypes = [gnutls_kx_algorithm_t, gnutls_cipher_algorithm_t, gnutls_mac_algorithm_t]
+gnutls_cipher_suite_get_name.argtypes = [
+    gnutls_kx_algorithm_t,
+    gnutls_cipher_algorithm_t,
+    gnutls_mac_algorithm_t,
+]
 gnutls_cipher_suite_get_name.restype = c_char_p
 
 gnutls_cipher_suite_info = libgnutls.gnutls_cipher_suite_info
-gnutls_cipher_suite_info.argtypes = [size_t, c_char_p, POINTER(gnutls_kx_algorithm_t), POINTER(gnutls_cipher_algorithm_t), POINTER(gnutls_mac_algorithm_t), POINTER(gnutls_protocol_t)]
+gnutls_cipher_suite_info.argtypes = [
+    size_t,
+    c_char_p,
+    POINTER(gnutls_kx_algorithm_t),
+    POINTER(gnutls_cipher_algorithm_t),
+    POINTER(gnutls_mac_algorithm_t),
+    POINTER(gnutls_protocol_t),
+]
 gnutls_cipher_suite_info.restype = c_char_p
 
 gnutls_compression_get = libgnutls.gnutls_compression_get
@@ -260,7 +461,11 @@ gnutls_credentials_clear.argtypes = [gnutls_session_t]
 gnutls_credentials_clear.restype = None
 
 gnutls_credentials_set = libgnutls.gnutls_credentials_set
-gnutls_credentials_set.argtypes = [gnutls_session_t, gnutls_credentials_type_t, c_void_p]
+gnutls_credentials_set.argtypes = [
+    gnutls_session_t,
+    gnutls_credentials_type_t,
+    c_void_p,
+]
 gnutls_credentials_set.restype = c_int
 
 gnutls_db_check_entry = libgnutls.gnutls_db_check_entry
@@ -300,7 +505,11 @@ gnutls_deinit.argtypes = [gnutls_session_t]
 gnutls_deinit.restype = None
 
 gnutls_dh_get_group = libgnutls.gnutls_dh_get_group
-gnutls_dh_get_group.argtypes = [gnutls_session_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+gnutls_dh_get_group.argtypes = [
+    gnutls_session_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
 gnutls_dh_get_group.restype = c_int
 
 gnutls_dh_get_peers_public_bits = libgnutls.gnutls_dh_get_peers_public_bits
@@ -328,11 +537,21 @@ gnutls_dh_params_deinit.argtypes = [gnutls_dh_params_t]
 gnutls_dh_params_deinit.restype = None
 
 gnutls_dh_params_export_pkcs3 = libgnutls.gnutls_dh_params_export_pkcs3
-gnutls_dh_params_export_pkcs3.argtypes = [gnutls_dh_params_t, gnutls_x509_crt_fmt_t, POINTER(c_ubyte), POINTER(size_t)]
+gnutls_dh_params_export_pkcs3.argtypes = [
+    gnutls_dh_params_t,
+    gnutls_x509_crt_fmt_t,
+    POINTER(c_ubyte),
+    POINTER(size_t),
+]
 gnutls_dh_params_export_pkcs3.restype = c_int
 
 gnutls_dh_params_export_raw = libgnutls.gnutls_dh_params_export_raw
-gnutls_dh_params_export_raw.argtypes = [gnutls_dh_params_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(c_uint)]
+gnutls_dh_params_export_raw.argtypes = [
+    gnutls_dh_params_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(c_uint),
+]
 gnutls_dh_params_export_raw.restype = c_int
 
 gnutls_dh_params_generate2 = libgnutls.gnutls_dh_params_generate2
@@ -340,11 +559,19 @@ gnutls_dh_params_generate2.argtypes = [gnutls_dh_params_t, c_uint]
 gnutls_dh_params_generate2.restype = c_int
 
 gnutls_dh_params_import_pkcs3 = libgnutls.gnutls_dh_params_import_pkcs3
-gnutls_dh_params_import_pkcs3.argtypes = [gnutls_dh_params_t, POINTER(gnutls_datum_t), gnutls_x509_crt_fmt_t]
+gnutls_dh_params_import_pkcs3.argtypes = [
+    gnutls_dh_params_t,
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_dh_params_import_pkcs3.restype = c_int
 
 gnutls_dh_params_import_raw = libgnutls.gnutls_dh_params_import_raw
-gnutls_dh_params_import_raw.argtypes = [gnutls_dh_params_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+gnutls_dh_params_import_raw.argtypes = [
+    gnutls_dh_params_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
 gnutls_dh_params_import_raw.restype = c_int
 
 gnutls_dh_params_init = libgnutls.gnutls_dh_params_init
@@ -364,7 +591,12 @@ gnutls_error_to_alert.argtypes = [c_int, POINTER(c_int)]
 gnutls_error_to_alert.restype = c_int
 
 gnutls_fingerprint = libgnutls.gnutls_fingerprint
-gnutls_fingerprint.argtypes = [gnutls_digest_algorithm_t, POINTER(gnutls_datum_t), c_void_p, POINTER(size_t)]
+gnutls_fingerprint.argtypes = [
+    gnutls_digest_algorithm_t,
+    POINTER(gnutls_datum_t),
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_fingerprint.restype = c_int
 
 gnutls_global_deinit = libgnutls.gnutls_global_deinit
@@ -384,7 +616,13 @@ gnutls_global_set_log_level.argtypes = [c_int]
 gnutls_global_set_log_level.restype = None
 
 gnutls_global_set_mem_functions = libgnutls.gnutls_global_set_mem_functions
-gnutls_global_set_mem_functions.argtypes = [gnutls_alloc_function, gnutls_alloc_function, gnutls_is_secure_function, gnutls_realloc_function, gnutls_free_function]
+gnutls_global_set_mem_functions.argtypes = [
+    gnutls_alloc_function,
+    gnutls_alloc_function,
+    gnutls_is_secure_function,
+    gnutls_realloc_function,
+    gnutls_free_function,
+]
 gnutls_global_set_mem_functions.restype = None
 
 gnutls_handshake = libgnutls.gnutls_handshake
@@ -399,15 +637,24 @@ gnutls_handshake_get_last_out = libgnutls.gnutls_handshake_get_last_out
 gnutls_handshake_get_last_out.argtypes = [gnutls_session_t]
 gnutls_handshake_get_last_out.restype = gnutls_handshake_description_t
 
-gnutls_handshake_set_max_packet_length = libgnutls.gnutls_handshake_set_max_packet_length
+gnutls_handshake_set_max_packet_length = (
+    libgnutls.gnutls_handshake_set_max_packet_length
+)
 gnutls_handshake_set_max_packet_length.argtypes = [gnutls_session_t, size_t]
 gnutls_handshake_set_max_packet_length.restype = None
 
-gnutls_handshake_set_post_client_hello_function = libgnutls.gnutls_handshake_set_post_client_hello_function
-gnutls_handshake_set_post_client_hello_function.argtypes = [gnutls_session_t, gnutls_handshake_post_client_hello_func]
+gnutls_handshake_set_post_client_hello_function = (
+    libgnutls.gnutls_handshake_set_post_client_hello_function
+)
+gnutls_handshake_set_post_client_hello_function.argtypes = [
+    gnutls_session_t,
+    gnutls_handshake_post_client_hello_func,
+]
 gnutls_handshake_set_post_client_hello_function.restype = None
 
-gnutls_handshake_set_private_extensions = libgnutls.gnutls_handshake_set_private_extensions
+gnutls_handshake_set_private_extensions = (
+    libgnutls.gnutls_handshake_set_private_extensions
+)
 gnutls_handshake_set_private_extensions.argtypes = [gnutls_session_t, c_int]
 gnutls_handshake_set_private_extensions.restype = None
 
@@ -422,6 +669,10 @@ gnutls_hex_decode.restype = c_int
 gnutls_hex_encode = libgnutls.gnutls_hex_encode
 gnutls_hex_encode.argtypes = [POINTER(gnutls_datum_t), c_char_p, POINTER(size_t)]
 gnutls_hex_encode.restype = c_int
+
+gnutls_hex_encode2 = libgnutls.gnutls_hex_encode2
+gnutls_hex_encode2.argtypes = [POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+gnutls_hex_encode2.restype = c_int
 
 gnutls_init = libgnutls.gnutls_init
 gnutls_init.argtypes = [POINTER(gnutls_session_t), gnutls_connection_end_t]
@@ -464,11 +715,21 @@ gnutls_mac_list.argtypes = []
 gnutls_mac_list.restype = POINTER(gnutls_mac_algorithm_t)
 
 gnutls_pem_base64_decode = libgnutls.gnutls_pem_base64_decode
-gnutls_pem_base64_decode.argtypes = [c_char_p, POINTER(gnutls_datum_t), POINTER(c_ubyte), POINTER(size_t)]
+gnutls_pem_base64_decode.argtypes = [
+    c_char_p,
+    POINTER(gnutls_datum_t),
+    POINTER(c_ubyte),
+    POINTER(size_t),
+]
 gnutls_pem_base64_decode.restype = c_int
 
 gnutls_pem_base64_encode = libgnutls.gnutls_pem_base64_encode
-gnutls_pem_base64_encode.argtypes = [c_char_p, POINTER(gnutls_datum_t), c_char_p, POINTER(size_t)]
+gnutls_pem_base64_encode.argtypes = [
+    c_char_p,
+    POINTER(gnutls_datum_t),
+    c_char_p,
+    POINTER(size_t),
+]
 gnutls_pem_base64_encode.restype = c_int
 
 gnutls_perror = libgnutls.gnutls_perror
@@ -492,8 +753,17 @@ gnutls_pkcs7_delete_crt.argtypes = [gnutls_pkcs7_t, c_int]
 gnutls_pkcs7_delete_crt.restype = c_int
 
 gnutls_pkcs7_export = libgnutls.gnutls_pkcs7_export
-gnutls_pkcs7_export.argtypes = [gnutls_pkcs7_t, gnutls_x509_crt_fmt_t, c_void_p, POINTER(size_t)]
+gnutls_pkcs7_export.argtypes = [
+    gnutls_pkcs7_t,
+    gnutls_x509_crt_fmt_t,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_pkcs7_export.restype = c_int
+
+gnutls_pkcs7_get_signature_count = libgnutls.gnutls_pkcs7_get_signature_count
+gnutls_pkcs7_get_signature_count.argtypes = [gnutls_pkcs7_t]
+gnutls_pkcs7_get_signature_count.restype = c_int
 
 gnutls_pkcs7_get_crl_count = libgnutls.gnutls_pkcs7_get_crl_count
 gnutls_pkcs7_get_crl_count.argtypes = [gnutls_pkcs7_t]
@@ -512,7 +782,11 @@ gnutls_pkcs7_get_crt_raw.argtypes = [gnutls_pkcs7_t, c_int, c_void_p, POINTER(si
 gnutls_pkcs7_get_crt_raw.restype = c_int
 
 gnutls_pkcs7_import = libgnutls.gnutls_pkcs7_import
-gnutls_pkcs7_import.argtypes = [gnutls_pkcs7_t, POINTER(gnutls_datum_t), gnutls_x509_crt_fmt_t]
+gnutls_pkcs7_import.argtypes = [
+    gnutls_pkcs7_t,
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_pkcs7_import.restype = c_int
 
 gnutls_pkcs7_init = libgnutls.gnutls_pkcs7_init
@@ -535,12 +809,76 @@ gnutls_pkcs7_set_crt_raw = libgnutls.gnutls_pkcs7_set_crt_raw
 gnutls_pkcs7_set_crt_raw.argtypes = [gnutls_pkcs7_t, POINTER(gnutls_datum_t)]
 gnutls_pkcs7_set_crt_raw.restype = c_int
 
+gnutls_pkcs7_sign = libgnutls.gnutls_pkcs7_sign
+gnutls_pkcs7_sign.argtypes = [
+    gnutls_pkcs7_t,
+    gnutls_x509_crt_t,
+    gnutls_privkey_t,
+    POINTER(gnutls_datum_t),
+    gnutls_pkcs7_attrs_t,
+    gnutls_pkcs7_attrs_t,
+    gnutls_digest_algorithm_t,
+    c_uint,
+]
+gnutls_pkcs7_sign.restype = c_int
+
+gnutls_pkcs7_verify_direct = libgnutls.gnutls_pkcs7_verify_direct
+gnutls_pkcs7_verify_direct.argtypes = [
+    gnutls_pkcs7_t,
+    gnutls_x509_crt_t,
+    c_uint,
+    POINTER(gnutls_datum_t),
+    c_uint,
+]
+gnutls_pkcs7_verify_direct.restype = c_int
+
+gnutls_pkcs7_verify = libgnutls.gnutls_pkcs7_verify
+gnutls_pkcs7_verify.argtypes = [
+    gnutls_pkcs7_t,
+    gnutls_x509_trust_list_t,
+    POINTER(gnutls_typed_vdata_st),
+    c_uint,
+    c_uint,
+    POINTER(gnutls_datum_t),
+    c_uint,
+]
+gnutls_pkcs7_verify.restype = c_int
+
+gnutls_pkcs7_get_signature_info = libgnutls.gnutls_pkcs7_get_signature_info
+gnutls_pkcs7_get_signature_info.argtypes = [
+    gnutls_pkcs7_t,
+    c_uint,
+    POINTER(gnutls_pkcs7_signature_info_st),
+]
+gnutls_pkcs7_get_signature_info.restype = c_int
+
+gnutls_pkcs7_signature_info_deinit = libgnutls.gnutls_pkcs7_signature_info_deinit
+gnutls_pkcs7_signature_info_deinit.argtypes = [POINTER(gnutls_pkcs7_signature_info_st)]
+gnutls_pkcs7_signature_info_deinit.restype = None
+
 gnutls_prf = libgnutls.gnutls_prf
-gnutls_prf.argtypes = [gnutls_session_t, size_t, c_char_p, c_int, size_t, c_char_p, size_t, c_char_p]
+gnutls_prf.argtypes = [
+    gnutls_session_t,
+    size_t,
+    c_char_p,
+    c_int,
+    size_t,
+    c_char_p,
+    size_t,
+    c_char_p,
+]
 gnutls_prf.restype = c_int
 
 gnutls_prf_raw = libgnutls.gnutls_prf_raw
-gnutls_prf_raw.argtypes = [gnutls_session_t, size_t, c_char_p, size_t, c_char_p, size_t, c_char_p]
+gnutls_prf_raw.argtypes = [
+    gnutls_session_t,
+    size_t,
+    c_char_p,
+    size_t,
+    c_char_p,
+    size_t,
+    c_char_p,
+]
 gnutls_prf_raw.restype = c_int
 
 gnutls_priority_deinit = libgnutls.gnutls_priority_deinit
@@ -548,7 +886,11 @@ gnutls_priority_deinit.argtypes = [gnutls_priority_t]
 gnutls_priority_deinit.restype = None
 
 gnutls_priority_init = libgnutls.gnutls_priority_init
-gnutls_priority_init.argtypes = [POINTER(gnutls_priority_t), c_char_p, POINTER(c_char_p)]
+gnutls_priority_init.argtypes = [
+    POINTER(gnutls_priority_t),
+    c_char_p,
+    POINTER(c_char_p),
+]
 gnutls_priority_init.restype = c_int
 
 gnutls_priority_set = libgnutls.gnutls_priority_set
@@ -558,6 +900,199 @@ gnutls_priority_set.restype = c_int
 gnutls_priority_set_direct = libgnutls.gnutls_priority_set_direct
 gnutls_priority_set_direct.argtypes = [gnutls_session_t, c_char_p, POINTER(c_char_p)]
 gnutls_priority_set_direct.restype = c_int
+
+gnutls_privkey_decrypt_data = libgnutls.gnutls_privkey_decrypt_data
+gnutls_privkey_decrypt_data.argtypes = [
+    gnutls_privkey_t,
+    c_int,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_privkey_decrypt_data.restype = c_int
+
+gnutls_privkey_deinit = libgnutls.gnutls_privkey_deinit
+gnutls_privkey_deinit.argtypes = [gnutls_privkey_t]
+gnutls_privkey_deinit.restype = None
+
+# no raw2 on cygwin
+gnutls_privkey_export_dsa_raw = libgnutls.gnutls_privkey_export_dsa_raw
+gnutls_privkey_export_dsa_raw.argtypes = [
+    gnutls_privkey_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_privkey_export_dsa_raw.restype = c_int
+
+# no raw2 on cygwin
+gnutls_privkey_export_rsa_raw = libgnutls.gnutls_privkey_export_rsa_raw
+gnutls_privkey_export_rsa_raw.argtypes = [
+    gnutls_privkey_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_privkey_export_rsa_raw.restype = c_int
+
+gnutls_privkey_generate = libgnutls.gnutls_privkey_generate
+gnutls_privkey_generate.argtypes = [
+    gnutls_privkey_t,
+    gnutls_pk_algorithm_t,
+    c_uint,
+    c_uint,
+]
+gnutls_privkey_generate.restype = c_int
+
+gnutls_privkey_get_pk_algorithm = libgnutls.gnutls_privkey_get_pk_algorithm
+gnutls_privkey_get_pk_algorithm.argtypes = [gnutls_privkey_t, POINTER(c_uint)]
+gnutls_privkey_get_pk_algorithm.restype = c_int
+
+gnutls_privkey_import_tpm_url = libgnutls.gnutls_privkey_import_tpm_url
+gnutls_privkey_import_tpm_url.argtypes = [
+    gnutls_privkey_t,
+    c_char_p,
+    c_char_p,
+    c_char_p,
+    c_uint,
+]
+gnutls_privkey_import_tpm_url.restype = c_int
+
+gnutls_privkey_import_url = libgnutls.gnutls_privkey_import_url
+gnutls_privkey_import_url.argtypes = [gnutls_privkey_t, c_char_p, c_uint]
+gnutls_privkey_import_url.restype = c_int
+
+gnutls_privkey_init = libgnutls.gnutls_privkey_init
+gnutls_privkey_init.argtypes = [POINTER(gnutls_privkey_t)]
+gnutls_privkey_init.restype = c_int
+
+gnutls_privkey_sign_data = libgnutls.gnutls_privkey_sign_data
+gnutls_privkey_sign_data.argtypes = [
+    gnutls_privkey_t,
+    gnutls_digest_algorithm_t,
+    c_uint,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_privkey_sign_data.restype = c_int
+
+# no sign_data2 on cygwin
+gnutls_privkey_sign_data = libgnutls.gnutls_privkey_sign_data
+gnutls_privkey_sign_data.argtypes = [
+    gnutls_privkey_t,
+    gnutls_digest_algorithm_t,
+    c_uint,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_privkey_sign_data.restype = c_int
+
+# no sign_hash2 on cygwin
+gnutls_privkey_sign_hash = libgnutls.gnutls_privkey_sign_hash
+gnutls_privkey_sign_hash.argtypes = [
+    gnutls_privkey_t,
+    gnutls_digest_algorithm_t,
+    c_uint,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_privkey_sign_hash.restype = c_int
+
+gnutls_pubkey_encrypt_data = libgnutls.gnutls_pubkey_encrypt_data
+gnutls_pubkey_encrypt_data.argtypes = [
+    gnutls_pubkey_t,
+    c_int,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_pubkey_encrypt_data.restype = c_int
+
+gnutls_pubkey_export_dsa_raw = libgnutls.gnutls_pubkey_export_rsa_raw
+gnutls_pubkey_export_dsa_raw.argtypes = [
+    gnutls_pubkey_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_pubkey_export_dsa_raw.restype = c_int
+
+# no raw2 on cygwin
+gnutls_pubkey_export_rsa_raw = libgnutls.gnutls_pubkey_export_rsa_raw
+gnutls_pubkey_export_rsa_raw.argtypes = [
+    gnutls_pubkey_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_pubkey_export_rsa_raw.restype = c_int
+
+gnutls_pubkey_get_pk_algorithm = libgnutls.gnutls_pubkey_get_pk_algorithm
+gnutls_pubkey_get_pk_algorithm.argtypes = [gnutls_pubkey_t, POINTER(c_uint)]
+gnutls_pubkey_get_pk_algorithm.restype = c_int
+
+gnutls_pubkey_import_dsa_raw = libgnutls.gnutls_pubkey_import_dsa_raw
+gnutls_pubkey_import_dsa_raw.argtypes = [
+    gnutls_pubkey_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_pubkey_import_dsa_raw.restype = c_int
+
+gnutls_pubkey_import_rsa_raw = libgnutls.gnutls_pubkey_import_rsa_raw
+gnutls_pubkey_import_rsa_raw.argtypes = [
+    gnutls_pubkey_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_pubkey_import_rsa_raw.restype = c_int
+
+gnutls_pubkey_import_tpm_url = libgnutls.gnutls_pubkey_import_tpm_url
+gnutls_pubkey_import_tpm_url.argtypes = [gnutls_pubkey_t, c_char_p, c_char_p, c_uint]
+gnutls_pubkey_import_tpm_url.restype = c_int
+
+gnutls_pubkey_import_url = libgnutls.gnutls_pubkey_import_url
+gnutls_pubkey_import_url.argtypes = [gnutls_pubkey_t, c_char_p, c_uint]
+gnutls_pubkey_import_url.restype = c_int
+
+gnutls_pubkey_init = libgnutls.gnutls_pubkey_init
+gnutls_pubkey_init.argtypes = [POINTER(gnutls_pubkey_t)]
+gnutls_pubkey_init.restype = c_int
+
+gnutls_pubkey_verify_data2 = libgnutls.gnutls_pubkey_verify_data2
+gnutls_pubkey_verify_data2.argtypes = [
+    gnutls_pubkey_t,
+    gnutls_sign_algorithm_t,
+    c_int,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_pubkey_verify_data2.restype = c_int
+
+gnutls_pubkey_verify_hash2 = libgnutls.gnutls_pubkey_verify_hash2
+gnutls_pubkey_verify_hash2.argtypes = [
+    gnutls_pubkey_t,
+    gnutls_sign_algorithm_t,
+    c_int,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_pubkey_verify_hash2.restype = c_int
+
+gnutls_privkey_import_x509 = libgnutls.gnutls_privkey_import_x509
+gnutls_privkey_import_x509.argtypes = [
+    gnutls_privkey_t,
+    gnutls_x509_privkey_t,
+    c_int,
+]  # FIXME: flags?
+gnutls_privkey_import_x509.restype = c_int
 
 gnutls_protocol_get_id = libgnutls.gnutls_protocol_get_id
 gnutls_protocol_get_id.argtypes = [c_char_p]
@@ -575,12 +1110,20 @@ gnutls_protocol_list = libgnutls.gnutls_protocol_list
 gnutls_protocol_list.argtypes = []
 gnutls_protocol_list.restype = POINTER(gnutls_protocol_t)
 
-gnutls_psk_allocate_client_credentials = libgnutls.gnutls_psk_allocate_client_credentials
-gnutls_psk_allocate_client_credentials.argtypes = [POINTER(gnutls_psk_client_credentials_t)]
+gnutls_psk_allocate_client_credentials = (
+    libgnutls.gnutls_psk_allocate_client_credentials
+)
+gnutls_psk_allocate_client_credentials.argtypes = [
+    POINTER(gnutls_psk_client_credentials_t)
+]
 gnutls_psk_allocate_client_credentials.restype = c_int
 
-gnutls_psk_allocate_server_credentials = libgnutls.gnutls_psk_allocate_server_credentials
-gnutls_psk_allocate_server_credentials.argtypes = [POINTER(gnutls_psk_server_credentials_t)]
+gnutls_psk_allocate_server_credentials = (
+    libgnutls.gnutls_psk_allocate_server_credentials
+)
+gnutls_psk_allocate_server_credentials.argtypes = [
+    POINTER(gnutls_psk_server_credentials_t)
+]
 gnutls_psk_allocate_server_credentials.restype = c_int
 
 gnutls_psk_client_get_hint = libgnutls.gnutls_psk_client_get_hint
@@ -600,36 +1143,96 @@ gnutls_psk_server_get_username.argtypes = [gnutls_session_t]
 gnutls_psk_server_get_username.restype = c_char_p
 
 gnutls_psk_set_client_credentials = libgnutls.gnutls_psk_set_client_credentials
-gnutls_psk_set_client_credentials.argtypes = [gnutls_psk_client_credentials_t, c_char_p, POINTER(gnutls_datum_t), gnutls_psk_key_flags]
+gnutls_psk_set_client_credentials.argtypes = [
+    gnutls_psk_client_credentials_t,
+    c_char_p,
+    POINTER(gnutls_datum_t),
+    gnutls_psk_key_flags,
+]
 gnutls_psk_set_client_credentials.restype = c_int
 
-gnutls_psk_set_client_credentials_function = libgnutls.gnutls_psk_set_client_credentials_function
-gnutls_psk_set_client_credentials_function.argtypes = [gnutls_psk_client_credentials_t, gnutls_psk_client_credentials_function]
+gnutls_psk_set_client_credentials_function = (
+    libgnutls.gnutls_psk_set_client_credentials_function
+)
+gnutls_psk_set_client_credentials_function.argtypes = [
+    gnutls_psk_client_credentials_t,
+    gnutls_psk_client_credentials_function,
+]
 gnutls_psk_set_client_credentials_function.restype = None
 
 gnutls_psk_set_params_function = libgnutls.gnutls_psk_set_params_function
-gnutls_psk_set_params_function.argtypes = [gnutls_psk_server_credentials_t, gnutls_params_function]
+gnutls_psk_set_params_function.argtypes = [
+    gnutls_psk_server_credentials_t,
+    gnutls_params_function,
+]
 gnutls_psk_set_params_function.restype = None
 
-gnutls_psk_set_server_credentials_file = libgnutls.gnutls_psk_set_server_credentials_file
-gnutls_psk_set_server_credentials_file.argtypes = [gnutls_psk_server_credentials_t, c_char_p]
+gnutls_psk_set_server_credentials_file = (
+    libgnutls.gnutls_psk_set_server_credentials_file
+)
+gnutls_psk_set_server_credentials_file.argtypes = [
+    gnutls_psk_server_credentials_t,
+    c_char_p,
+]
 gnutls_psk_set_server_credentials_file.restype = c_int
 
-gnutls_psk_set_server_credentials_function = libgnutls.gnutls_psk_set_server_credentials_function
-gnutls_psk_set_server_credentials_function.argtypes = [gnutls_psk_server_credentials_t, gnutls_psk_server_credentials_function]
+gnutls_psk_set_server_credentials_function = (
+    libgnutls.gnutls_psk_set_server_credentials_function
+)
+gnutls_psk_set_server_credentials_function.argtypes = [
+    gnutls_psk_server_credentials_t,
+    gnutls_psk_server_credentials_function,
+]
 gnutls_psk_set_server_credentials_function.restype = None
 
-gnutls_psk_set_server_credentials_hint = libgnutls.gnutls_psk_set_server_credentials_hint
-gnutls_psk_set_server_credentials_hint.argtypes = [gnutls_psk_server_credentials_t, c_char_p]
+gnutls_psk_set_server_credentials_hint = (
+    libgnutls.gnutls_psk_set_server_credentials_hint
+)
+gnutls_psk_set_server_credentials_hint.argtypes = [
+    gnutls_psk_server_credentials_t,
+    c_char_p,
+]
 gnutls_psk_set_server_credentials_hint.restype = c_int
 
 gnutls_psk_set_server_dh_params = libgnutls.gnutls_psk_set_server_dh_params
-gnutls_psk_set_server_dh_params.argtypes = [gnutls_psk_server_credentials_t, gnutls_dh_params_t]
+gnutls_psk_set_server_dh_params.argtypes = [
+    gnutls_psk_server_credentials_t,
+    gnutls_dh_params_t,
+]
 gnutls_psk_set_server_dh_params.restype = None
 
 gnutls_psk_set_server_params_function = libgnutls.gnutls_psk_set_server_params_function
-gnutls_psk_set_server_params_function.argtypes = [gnutls_psk_server_credentials_t, gnutls_params_function]
+gnutls_psk_set_server_params_function.argtypes = [
+    gnutls_psk_server_credentials_t,
+    gnutls_params_function,
+]
 gnutls_psk_set_server_params_function.restype = None
+
+gnutls_pubkey_deinit = libgnutls.gnutls_pubkey_deinit
+gnutls_pubkey_deinit.argtypes = [gnutls_pubkey_t]
+gnutls_pubkey_deinit.restype = None
+
+gnutls_pubkey_init = libgnutls.gnutls_pubkey_init
+gnutls_pubkey_init.argtypes = [POINTER(gnutls_pubkey_t)]
+gnutls_pubkey_init.restype = c_int
+
+gnutls_pubkey_import_x509 = libgnutls.gnutls_pubkey_import_x509
+gnutls_pubkey_import_x509.argtypes = [
+    gnutls_pubkey_t,
+    gnutls_x509_crt_t,
+    c_int,
+]  # FIXME: flags?
+gnutls_pubkey_import_x509.restype = c_int
+
+gnutls_pubkey_get_preferred_hash_algorithm = (
+    libgnutls.gnutls_pubkey_get_preferred_hash_algorithm
+)
+gnutls_pubkey_get_preferred_hash_algorithm.argtypes = [
+    gnutls_pubkey_t,
+    POINTER(gnutls_digest_algorithm_t),
+    POINTER(c_uint),
+]  # FIXME: mand?
+gnutls_pubkey_get_preferred_hash_algorithm.restype = c_int
 
 gnutls_record_check_pending = libgnutls.gnutls_record_check_pending
 gnutls_record_check_pending.argtypes = [gnutls_session_t]
@@ -664,14 +1267,27 @@ gnutls_rehandshake.argtypes = [gnutls_session_t]
 gnutls_rehandshake.restype = c_int
 
 gnutls_server_name_get = libgnutls.gnutls_server_name_get
-gnutls_server_name_get.argtypes = [gnutls_session_t, c_void_p, POINTER(size_t), POINTER(c_uint), c_uint]
+gnutls_server_name_get.argtypes = [
+    gnutls_session_t,
+    c_void_p,
+    POINTER(size_t),
+    POINTER(c_uint),
+    c_uint,
+]
 gnutls_server_name_get.restype = c_int
 
 gnutls_server_name_set = libgnutls.gnutls_server_name_set
-gnutls_server_name_set.argtypes = [gnutls_session_t, gnutls_server_name_type_t, c_void_p, size_t]
+gnutls_server_name_set.argtypes = [
+    gnutls_session_t,
+    gnutls_server_name_type_t,
+    c_void_p,
+    size_t,
+]
 gnutls_server_name_set.restype = c_int
 
-gnutls_session_enable_compatibility_mode = libgnutls.gnutls_session_enable_compatibility_mode
+gnutls_session_enable_compatibility_mode = (
+    libgnutls.gnutls_session_enable_compatibility_mode
+)
 gnutls_session_enable_compatibility_mode.argtypes = [gnutls_session_t]
 gnutls_session_enable_compatibility_mode.restype = None
 
@@ -724,7 +1340,11 @@ gnutls_transport_get_ptr.argtypes = [gnutls_session_t]
 gnutls_transport_get_ptr.restype = gnutls_transport_ptr_t
 
 gnutls_transport_get_ptr2 = libgnutls.gnutls_transport_get_ptr2
-gnutls_transport_get_ptr2.argtypes = [gnutls_session_t, POINTER(gnutls_transport_ptr_t), POINTER(gnutls_transport_ptr_t)]
+gnutls_transport_get_ptr2.argtypes = [
+    gnutls_session_t,
+    POINTER(gnutls_transport_ptr_t),
+    POINTER(gnutls_transport_ptr_t),
+]
 gnutls_transport_get_ptr2.restype = None
 
 gnutls_transport_set_errno = libgnutls.gnutls_transport_set_errno
@@ -736,7 +1356,11 @@ gnutls_transport_set_ptr.argtypes = [gnutls_session_t, gnutls_transport_ptr_t]
 gnutls_transport_set_ptr.restype = None
 
 gnutls_transport_set_ptr2 = libgnutls.gnutls_transport_set_ptr2
-gnutls_transport_set_ptr2.argtypes = [gnutls_session_t, gnutls_transport_ptr_t, gnutls_transport_ptr_t]
+gnutls_transport_set_ptr2.argtypes = [
+    gnutls_session_t,
+    gnutls_transport_ptr_t,
+    gnutls_transport_ptr_t,
+]
 gnutls_transport_set_ptr2.restype = None
 
 gnutls_transport_set_pull_function = libgnutls.gnutls_transport_set_pull_function
@@ -756,7 +1380,12 @@ gnutls_x509_crl_deinit.argtypes = [gnutls_x509_crl_t]
 gnutls_x509_crl_deinit.restype = None
 
 gnutls_x509_crl_export = libgnutls.gnutls_x509_crl_export
-gnutls_x509_crl_export.argtypes = [gnutls_x509_crl_t, gnutls_x509_crt_fmt_t, c_void_p, POINTER(size_t)]
+gnutls_x509_crl_export.argtypes = [
+    gnutls_x509_crl_t,
+    gnutls_x509_crt_fmt_t,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crl_export.restype = c_int
 
 gnutls_x509_crl_get_crt_count = libgnutls.gnutls_x509_crl_get_crt_count
@@ -764,11 +1393,22 @@ gnutls_x509_crl_get_crt_count.argtypes = [gnutls_x509_crl_t]
 gnutls_x509_crl_get_crt_count.restype = c_int
 
 gnutls_x509_crl_get_crt_serial = libgnutls.gnutls_x509_crl_get_crt_serial
-gnutls_x509_crl_get_crt_serial.argtypes = [gnutls_x509_crl_t, c_int, POINTER(c_ubyte), POINTER(size_t), POINTER(time_t)]
+gnutls_x509_crl_get_crt_serial.argtypes = [
+    gnutls_x509_crl_t,
+    c_int,
+    POINTER(c_ubyte),
+    POINTER(size_t),
+    POINTER(time_t),
+]
 gnutls_x509_crl_get_crt_serial.restype = c_int
 
 gnutls_x509_crl_get_dn_oid = libgnutls.gnutls_x509_crl_get_dn_oid
-gnutls_x509_crl_get_dn_oid.argtypes = [gnutls_x509_crl_t, c_int, c_void_p, POINTER(size_t)]
+gnutls_x509_crl_get_dn_oid.argtypes = [
+    gnutls_x509_crl_t,
+    c_int,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crl_get_dn_oid.restype = c_int
 
 gnutls_x509_crl_get_issuer_dn = libgnutls.gnutls_x509_crl_get_issuer_dn
@@ -776,7 +1416,14 @@ gnutls_x509_crl_get_issuer_dn.argtypes = [gnutls_x509_crl_t, c_char_p, POINTER(s
 gnutls_x509_crl_get_issuer_dn.restype = c_int
 
 gnutls_x509_crl_get_issuer_dn_by_oid = libgnutls.gnutls_x509_crl_get_issuer_dn_by_oid
-gnutls_x509_crl_get_issuer_dn_by_oid.argtypes = [gnutls_x509_crl_t, c_char_p, c_int, c_uint, c_void_p, POINTER(size_t)]
+gnutls_x509_crl_get_issuer_dn_by_oid.argtypes = [
+    gnutls_x509_crl_t,
+    c_char_p,
+    c_int,
+    c_uint,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crl_get_issuer_dn_by_oid.restype = c_int
 
 gnutls_x509_crl_get_next_update = libgnutls.gnutls_x509_crl_get_next_update
@@ -788,7 +1435,9 @@ gnutls_x509_crl_get_signature = libgnutls.gnutls_x509_crl_get_signature
 gnutls_x509_crl_get_signature.argtypes = [gnutls_x509_crl_t, c_char_p, POINTER(size_t)]
 gnutls_x509_crl_get_signature.restype = c_int
 
-gnutls_x509_crl_get_signature_algorithm = libgnutls.gnutls_x509_crl_get_signature_algorithm
+gnutls_x509_crl_get_signature_algorithm = (
+    libgnutls.gnutls_x509_crl_get_signature_algorithm
+)
 gnutls_x509_crl_get_signature_algorithm.argtypes = [gnutls_x509_crl_t]
 gnutls_x509_crl_get_signature_algorithm.restype = c_int
 
@@ -802,7 +1451,11 @@ gnutls_x509_crl_get_version.argtypes = [gnutls_x509_crl_t]
 gnutls_x509_crl_get_version.restype = c_int
 
 gnutls_x509_crl_import = libgnutls.gnutls_x509_crl_import
-gnutls_x509_crl_import.argtypes = [gnutls_x509_crl_t, POINTER(gnutls_datum_t), gnutls_x509_crt_fmt_t]
+gnutls_x509_crl_import.argtypes = [
+    gnutls_x509_crl_t,
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_x509_crl_import.restype = c_int
 
 gnutls_x509_crl_init = libgnutls.gnutls_x509_crl_init
@@ -810,7 +1463,11 @@ gnutls_x509_crl_init.argtypes = [POINTER(gnutls_x509_crl_t)]
 gnutls_x509_crl_init.restype = c_int
 
 gnutls_x509_crl_print = libgnutls.gnutls_x509_crl_print
-gnutls_x509_crl_print.argtypes = [gnutls_x509_crl_t, gnutls_certificate_print_formats_t, POINTER(gnutls_datum_t)]
+gnutls_x509_crl_print.argtypes = [
+    gnutls_x509_crl_t,
+    gnutls_certificate_print_formats_t,
+    POINTER(gnutls_datum_t),
+]
 gnutls_x509_crl_print.restype = c_int
 
 gnutls_x509_crl_set_crt = libgnutls.gnutls_x509_crl_set_crt
@@ -834,15 +1491,31 @@ gnutls_x509_crl_set_version.argtypes = [gnutls_x509_crl_t, c_uint]
 gnutls_x509_crl_set_version.restype = c_int
 
 gnutls_x509_crl_sign = libgnutls.gnutls_x509_crl_sign
-gnutls_x509_crl_sign.argtypes = [gnutls_x509_crl_t, gnutls_x509_crt_t, gnutls_x509_privkey_t]
+gnutls_x509_crl_sign.argtypes = [
+    gnutls_x509_crl_t,
+    gnutls_x509_crt_t,
+    gnutls_x509_privkey_t,
+]
 gnutls_x509_crl_sign.restype = c_int
 
 gnutls_x509_crl_sign2 = libgnutls.gnutls_x509_crl_sign2
-gnutls_x509_crl_sign2.argtypes = [gnutls_x509_crl_t, gnutls_x509_crt_t, gnutls_x509_privkey_t, gnutls_digest_algorithm_t, c_uint]
+gnutls_x509_crl_sign2.argtypes = [
+    gnutls_x509_crl_t,
+    gnutls_x509_crt_t,
+    gnutls_x509_privkey_t,
+    gnutls_digest_algorithm_t,
+    c_uint,
+]
 gnutls_x509_crl_sign2.restype = c_int
 
 gnutls_x509_crl_verify = libgnutls.gnutls_x509_crl_verify
-gnutls_x509_crl_verify.argtypes = [gnutls_x509_crl_t, POINTER(gnutls_x509_crt_t), c_int, c_uint, POINTER(c_uint)]
+gnutls_x509_crl_verify.argtypes = [
+    gnutls_x509_crl_t,
+    POINTER(gnutls_x509_crt_t),
+    c_int,
+    c_uint,
+    POINTER(c_uint),
+]
 gnutls_x509_crl_verify.restype = c_int
 
 gnutls_x509_crq_deinit = libgnutls.gnutls_x509_crq_deinit
@@ -850,15 +1523,32 @@ gnutls_x509_crq_deinit.argtypes = [gnutls_x509_crq_t]
 gnutls_x509_crq_deinit.restype = None
 
 gnutls_x509_crq_export = libgnutls.gnutls_x509_crq_export
-gnutls_x509_crq_export.argtypes = [gnutls_x509_crq_t, gnutls_x509_crt_fmt_t, c_void_p, POINTER(size_t)]
+gnutls_x509_crq_export.argtypes = [
+    gnutls_x509_crq_t,
+    gnutls_x509_crt_fmt_t,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crq_export.restype = c_int
 
 gnutls_x509_crq_get_attribute_by_oid = libgnutls.gnutls_x509_crq_get_attribute_by_oid
-gnutls_x509_crq_get_attribute_by_oid.argtypes = [gnutls_x509_crq_t, c_char_p, c_int, c_void_p, POINTER(size_t)]
+gnutls_x509_crq_get_attribute_by_oid.argtypes = [
+    gnutls_x509_crq_t,
+    c_char_p,
+    c_int,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crq_get_attribute_by_oid.restype = c_int
 
-gnutls_x509_crq_get_challenge_password = libgnutls.gnutls_x509_crq_get_challenge_password
-gnutls_x509_crq_get_challenge_password.argtypes = [gnutls_x509_crq_t, c_char_p, POINTER(size_t)]
+gnutls_x509_crq_get_challenge_password = (
+    libgnutls.gnutls_x509_crq_get_challenge_password
+)
+gnutls_x509_crq_get_challenge_password.argtypes = [
+    gnutls_x509_crq_t,
+    c_char_p,
+    POINTER(size_t),
+]
 gnutls_x509_crq_get_challenge_password.restype = c_int
 
 gnutls_x509_crq_get_dn = libgnutls.gnutls_x509_crq_get_dn
@@ -866,11 +1556,23 @@ gnutls_x509_crq_get_dn.argtypes = [gnutls_x509_crq_t, c_char_p, POINTER(size_t)]
 gnutls_x509_crq_get_dn.restype = c_int
 
 gnutls_x509_crq_get_dn_by_oid = libgnutls.gnutls_x509_crq_get_dn_by_oid
-gnutls_x509_crq_get_dn_by_oid.argtypes = [gnutls_x509_crq_t, c_char_p, c_int, c_uint, c_void_p, POINTER(size_t)]
+gnutls_x509_crq_get_dn_by_oid.argtypes = [
+    gnutls_x509_crq_t,
+    c_char_p,
+    c_int,
+    c_uint,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crq_get_dn_by_oid.restype = c_int
 
 gnutls_x509_crq_get_dn_oid = libgnutls.gnutls_x509_crq_get_dn_oid
-gnutls_x509_crq_get_dn_oid.argtypes = [gnutls_x509_crq_t, c_int, c_void_p, POINTER(size_t)]
+gnutls_x509_crq_get_dn_oid.argtypes = [
+    gnutls_x509_crq_t,
+    c_int,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crq_get_dn_oid.restype = c_int
 
 gnutls_x509_crq_get_pk_algorithm = libgnutls.gnutls_x509_crq_get_pk_algorithm
@@ -878,7 +1580,11 @@ gnutls_x509_crq_get_pk_algorithm.argtypes = [gnutls_x509_crq_t, POINTER(c_uint)]
 gnutls_x509_crq_get_pk_algorithm.restype = c_int
 
 gnutls_x509_crq_import = libgnutls.gnutls_x509_crq_import
-gnutls_x509_crq_import.argtypes = [gnutls_x509_crq_t, POINTER(gnutls_datum_t), gnutls_x509_crt_fmt_t]
+gnutls_x509_crq_import.argtypes = [
+    gnutls_x509_crq_t,
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_x509_crq_import.restype = c_int
 
 gnutls_x509_crq_init = libgnutls.gnutls_x509_crq_init
@@ -886,15 +1592,28 @@ gnutls_x509_crq_init.argtypes = [POINTER(gnutls_x509_crq_t)]
 gnutls_x509_crq_init.restype = c_int
 
 gnutls_x509_crq_set_attribute_by_oid = libgnutls.gnutls_x509_crq_set_attribute_by_oid
-gnutls_x509_crq_set_attribute_by_oid.argtypes = [gnutls_x509_crq_t, c_char_p, c_void_p, size_t]
+gnutls_x509_crq_set_attribute_by_oid.argtypes = [
+    gnutls_x509_crq_t,
+    c_char_p,
+    c_void_p,
+    size_t,
+]
 gnutls_x509_crq_set_attribute_by_oid.restype = c_int
 
-gnutls_x509_crq_set_challenge_password = libgnutls.gnutls_x509_crq_set_challenge_password
+gnutls_x509_crq_set_challenge_password = (
+    libgnutls.gnutls_x509_crq_set_challenge_password
+)
 gnutls_x509_crq_set_challenge_password.argtypes = [gnutls_x509_crq_t, c_char_p]
 gnutls_x509_crq_set_challenge_password.restype = c_int
 
 gnutls_x509_crq_set_dn_by_oid = libgnutls.gnutls_x509_crq_set_dn_by_oid
-gnutls_x509_crq_set_dn_by_oid.argtypes = [gnutls_x509_crq_t, c_char_p, c_uint, c_void_p, c_uint]
+gnutls_x509_crq_set_dn_by_oid.argtypes = [
+    gnutls_x509_crq_t,
+    c_char_p,
+    c_uint,
+    c_void_p,
+    c_uint,
+]
 gnutls_x509_crq_set_dn_by_oid.restype = c_int
 
 gnutls_x509_crq_set_key = libgnutls.gnutls_x509_crq_set_key
@@ -910,7 +1629,12 @@ gnutls_x509_crq_sign.argtypes = [gnutls_x509_crq_t, gnutls_x509_privkey_t]
 gnutls_x509_crq_sign.restype = c_int
 
 gnutls_x509_crq_sign2 = libgnutls.gnutls_x509_crq_sign2
-gnutls_x509_crq_sign2.argtypes = [gnutls_x509_crq_t, gnutls_x509_privkey_t, gnutls_digest_algorithm_t, c_uint]
+gnutls_x509_crq_sign2.argtypes = [
+    gnutls_x509_crq_t,
+    gnutls_x509_privkey_t,
+    gnutls_digest_algorithm_t,
+    c_uint,
+]
 gnutls_x509_crq_sign2.restype = c_int
 
 gnutls_x509_crt_check_hostname = libgnutls.gnutls_x509_crt_check_hostname
@@ -922,7 +1646,11 @@ gnutls_x509_crt_check_issuer.argtypes = [gnutls_x509_crt_t, gnutls_x509_crt_t]
 gnutls_x509_crt_check_issuer.restype = c_int
 
 gnutls_x509_crt_check_revocation = libgnutls.gnutls_x509_crt_check_revocation
-gnutls_x509_crt_check_revocation.argtypes = [gnutls_x509_crt_t, POINTER(gnutls_x509_crl_t), c_int]
+gnutls_x509_crt_check_revocation.argtypes = [
+    gnutls_x509_crt_t,
+    POINTER(gnutls_x509_crl_t),
+    c_int,
+]
 gnutls_x509_crt_check_revocation.restype = c_int
 
 gnutls_x509_crt_cpy_crl_dist_points = libgnutls.gnutls_x509_crt_cpy_crl_dist_points
@@ -934,20 +1662,37 @@ gnutls_x509_crt_deinit.argtypes = [gnutls_x509_crt_t]
 gnutls_x509_crt_deinit.restype = None
 
 gnutls_x509_crt_export = libgnutls.gnutls_x509_crt_export
-gnutls_x509_crt_export.argtypes = [gnutls_x509_crt_t, gnutls_x509_crt_fmt_t, c_void_p, POINTER(size_t)]
+gnutls_x509_crt_export.argtypes = [
+    gnutls_x509_crt_t,
+    gnutls_x509_crt_fmt_t,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crt_export.restype = c_int
 
 gnutls_x509_crt_get_activation_time = libgnutls.gnutls_x509_crt_get_activation_time
 gnutls_x509_crt_get_activation_time.argtypes = [gnutls_x509_crt_t]
 gnutls_x509_crt_get_activation_time.restype = time_t
-gnutls_x509_crt_get_activation_time.errmsg = "cannot get X509 certificate activation time"
+gnutls_x509_crt_get_activation_time.errmsg = (
+    "cannot get X509 certificate activation time"
+)
 
 gnutls_x509_crt_get_authority_key_id = libgnutls.gnutls_x509_crt_get_authority_key_id
-gnutls_x509_crt_get_authority_key_id.argtypes = [gnutls_x509_crt_t, c_void_p, POINTER(size_t), POINTER(c_uint)]
+gnutls_x509_crt_get_authority_key_id.argtypes = [
+    gnutls_x509_crt_t,
+    c_void_p,
+    POINTER(size_t),
+    POINTER(c_uint),
+]
 gnutls_x509_crt_get_authority_key_id.restype = c_int
 
 gnutls_x509_crt_get_basic_constraints = libgnutls.gnutls_x509_crt_get_basic_constraints
-gnutls_x509_crt_get_basic_constraints.argtypes = [gnutls_x509_crt_t, POINTER(c_uint), POINTER(c_int), POINTER(c_int)]
+gnutls_x509_crt_get_basic_constraints.argtypes = [
+    gnutls_x509_crt_t,
+    POINTER(c_uint),
+    POINTER(c_int),
+    POINTER(c_int),
+]
 gnutls_x509_crt_get_basic_constraints.restype = c_int
 
 gnutls_x509_crt_get_ca_status = libgnutls.gnutls_x509_crt_get_ca_status
@@ -955,7 +1700,14 @@ gnutls_x509_crt_get_ca_status.argtypes = [gnutls_x509_crt_t, POINTER(c_uint)]
 gnutls_x509_crt_get_ca_status.restype = c_int
 
 gnutls_x509_crt_get_crl_dist_points = libgnutls.gnutls_x509_crt_get_crl_dist_points
-gnutls_x509_crt_get_crl_dist_points.argtypes = [gnutls_x509_crt_t, c_uint, c_void_p, POINTER(size_t), POINTER(c_uint), POINTER(c_uint)]
+gnutls_x509_crt_get_crl_dist_points.argtypes = [
+    gnutls_x509_crt_t,
+    c_uint,
+    c_void_p,
+    POINTER(size_t),
+    POINTER(c_uint),
+    POINTER(c_uint),
+]
 gnutls_x509_crt_get_crl_dist_points.restype = c_int
 
 gnutls_x509_crt_get_dn = libgnutls.gnutls_x509_crt_get_dn
@@ -963,36 +1715,78 @@ gnutls_x509_crt_get_dn.argtypes = [gnutls_x509_crt_t, c_char_p, POINTER(size_t)]
 gnutls_x509_crt_get_dn.restype = c_int
 
 gnutls_x509_crt_get_dn_by_oid = libgnutls.gnutls_x509_crt_get_dn_by_oid
-gnutls_x509_crt_get_dn_by_oid.argtypes = [gnutls_x509_crt_t, c_char_p, c_int, c_uint, c_void_p, POINTER(size_t)]
+gnutls_x509_crt_get_dn_by_oid.argtypes = [
+    gnutls_x509_crt_t,
+    c_char_p,
+    c_int,
+    c_uint,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crt_get_dn_by_oid.restype = c_int
 
 gnutls_x509_crt_get_dn_oid = libgnutls.gnutls_x509_crt_get_dn_oid
-gnutls_x509_crt_get_dn_oid.argtypes = [gnutls_x509_crt_t, c_int, c_void_p, POINTER(size_t)]
+gnutls_x509_crt_get_dn_oid.argtypes = [
+    gnutls_x509_crt_t,
+    c_int,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crt_get_dn_oid.restype = c_int
 
 gnutls_x509_crt_get_expiration_time = libgnutls.gnutls_x509_crt_get_expiration_time
 gnutls_x509_crt_get_expiration_time.argtypes = [gnutls_x509_crt_t]
 gnutls_x509_crt_get_expiration_time.restype = time_t
-gnutls_x509_crt_get_expiration_time.errmsg = "cannot get X509 certificate expiration time"
+gnutls_x509_crt_get_expiration_time.errmsg = (
+    "cannot get X509 certificate expiration time"
+)
 
 gnutls_x509_crt_get_extension_by_oid = libgnutls.gnutls_x509_crt_get_extension_by_oid
-gnutls_x509_crt_get_extension_by_oid.argtypes = [gnutls_x509_crt_t, c_char_p, c_int, c_void_p, POINTER(size_t), POINTER(c_uint)]
+gnutls_x509_crt_get_extension_by_oid.argtypes = [
+    gnutls_x509_crt_t,
+    c_char_p,
+    c_int,
+    c_void_p,
+    POINTER(size_t),
+    POINTER(c_uint),
+]
 gnutls_x509_crt_get_extension_by_oid.restype = c_int
 
 gnutls_x509_crt_get_extension_data = libgnutls.gnutls_x509_crt_get_extension_data
-gnutls_x509_crt_get_extension_data.argtypes = [gnutls_x509_crt_t, c_int, c_void_p, POINTER(size_t)]
+gnutls_x509_crt_get_extension_data.argtypes = [
+    gnutls_x509_crt_t,
+    c_int,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crt_get_extension_data.restype = c_int
 
 gnutls_x509_crt_get_extension_info = libgnutls.gnutls_x509_crt_get_extension_info
-gnutls_x509_crt_get_extension_info.argtypes = [gnutls_x509_crt_t, c_int, c_void_p, POINTER(size_t), POINTER(c_int)]
+gnutls_x509_crt_get_extension_info.argtypes = [
+    gnutls_x509_crt_t,
+    c_int,
+    c_void_p,
+    POINTER(size_t),
+    POINTER(c_int),
+]
 gnutls_x509_crt_get_extension_info.restype = c_int
 
 gnutls_x509_crt_get_extension_oid = libgnutls.gnutls_x509_crt_get_extension_oid
-gnutls_x509_crt_get_extension_oid.argtypes = [gnutls_x509_crt_t, c_int, c_void_p, POINTER(size_t)]
+gnutls_x509_crt_get_extension_oid.argtypes = [
+    gnutls_x509_crt_t,
+    c_int,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crt_get_extension_oid.restype = c_int
 
 gnutls_x509_crt_get_fingerprint = libgnutls.gnutls_x509_crt_get_fingerprint
-gnutls_x509_crt_get_fingerprint.argtypes = [gnutls_x509_crt_t, gnutls_digest_algorithm_t, c_void_p, POINTER(size_t)]
+gnutls_x509_crt_get_fingerprint.argtypes = [
+    gnutls_x509_crt_t,
+    gnutls_digest_algorithm_t,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crt_get_fingerprint.restype = c_int
 
 gnutls_x509_crt_get_issuer = libgnutls.gnutls_x509_crt_get_issuer
@@ -1004,23 +1798,50 @@ gnutls_x509_crt_get_issuer_dn.argtypes = [gnutls_x509_crt_t, c_char_p, POINTER(s
 gnutls_x509_crt_get_issuer_dn.restype = c_int
 
 gnutls_x509_crt_get_issuer_dn_by_oid = libgnutls.gnutls_x509_crt_get_issuer_dn_by_oid
-gnutls_x509_crt_get_issuer_dn_by_oid.argtypes = [gnutls_x509_crt_t, c_char_p, c_int, c_uint, c_void_p, POINTER(size_t)]
+gnutls_x509_crt_get_issuer_dn_by_oid.argtypes = [
+    gnutls_x509_crt_t,
+    c_char_p,
+    c_int,
+    c_uint,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crt_get_issuer_dn_by_oid.restype = c_int
 
 gnutls_x509_crt_get_issuer_dn_oid = libgnutls.gnutls_x509_crt_get_issuer_dn_oid
-gnutls_x509_crt_get_issuer_dn_oid.argtypes = [gnutls_x509_crt_t, c_int, c_void_p, POINTER(size_t)]
+gnutls_x509_crt_get_issuer_dn_oid.argtypes = [
+    gnutls_x509_crt_t,
+    c_int,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crt_get_issuer_dn_oid.restype = c_int
 
 gnutls_x509_crt_get_key_id = libgnutls.gnutls_x509_crt_get_key_id
-gnutls_x509_crt_get_key_id.argtypes = [gnutls_x509_crt_t, c_uint, POINTER(c_ubyte), POINTER(size_t)]
+gnutls_x509_crt_get_key_id.argtypes = [
+    gnutls_x509_crt_t,
+    c_uint,
+    POINTER(c_ubyte),
+    POINTER(size_t),
+]
 gnutls_x509_crt_get_key_id.restype = c_int
 
 gnutls_x509_crt_get_key_purpose_oid = libgnutls.gnutls_x509_crt_get_key_purpose_oid
-gnutls_x509_crt_get_key_purpose_oid.argtypes = [gnutls_x509_crt_t, c_int, c_void_p, POINTER(size_t), POINTER(c_uint)]
+gnutls_x509_crt_get_key_purpose_oid.argtypes = [
+    gnutls_x509_crt_t,
+    c_int,
+    c_void_p,
+    POINTER(size_t),
+    POINTER(c_uint),
+]
 gnutls_x509_crt_get_key_purpose_oid.restype = c_int
 
 gnutls_x509_crt_get_key_usage = libgnutls.gnutls_x509_crt_get_key_usage
-gnutls_x509_crt_get_key_usage.argtypes = [gnutls_x509_crt_t, POINTER(c_uint), POINTER(c_uint)]
+gnutls_x509_crt_get_key_usage.argtypes = [
+    gnutls_x509_crt_t,
+    POINTER(c_uint),
+    POINTER(c_uint),
+]
 gnutls_x509_crt_get_key_usage.restype = c_int
 
 gnutls_x509_crt_get_pk_algorithm = libgnutls.gnutls_x509_crt_get_pk_algorithm
@@ -1028,15 +1849,32 @@ gnutls_x509_crt_get_pk_algorithm.argtypes = [gnutls_x509_crt_t, POINTER(c_uint)]
 gnutls_x509_crt_get_pk_algorithm.restype = c_int
 
 gnutls_x509_crt_get_pk_dsa_raw = libgnutls.gnutls_x509_crt_get_pk_dsa_raw
-gnutls_x509_crt_get_pk_dsa_raw.argtypes = [gnutls_x509_crt_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+gnutls_x509_crt_get_pk_dsa_raw.argtypes = [
+    gnutls_x509_crt_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
 gnutls_x509_crt_get_pk_dsa_raw.restype = c_int
 
 gnutls_x509_crt_get_pk_rsa_raw = libgnutls.gnutls_x509_crt_get_pk_rsa_raw
-gnutls_x509_crt_get_pk_rsa_raw.argtypes = [gnutls_x509_crt_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+gnutls_x509_crt_get_pk_rsa_raw.argtypes = [
+    gnutls_x509_crt_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
 gnutls_x509_crt_get_pk_rsa_raw.restype = c_int
 
 gnutls_x509_crt_get_proxy = libgnutls.gnutls_x509_crt_get_proxy
-gnutls_x509_crt_get_proxy.argtypes = [gnutls_x509_crt_t, POINTER(c_uint), POINTER(c_int), POINTER(c_char_p), POINTER(c_char_p), POINTER(size_t)]
+gnutls_x509_crt_get_proxy.argtypes = [
+    gnutls_x509_crt_t,
+    POINTER(c_uint),
+    POINTER(c_int),
+    POINTER(c_char_p),
+    POINTER(c_char_p),
+    POINTER(size_t),
+]
 gnutls_x509_crt_get_proxy.restype = c_int
 
 gnutls_x509_crt_get_raw_dn = libgnutls.gnutls_x509_crt_get_raw_dn
@@ -1044,7 +1882,10 @@ gnutls_x509_crt_get_raw_dn.argtypes = [gnutls_x509_crt_t, POINTER(gnutls_datum_t
 gnutls_x509_crt_get_raw_dn.restype = c_int
 
 gnutls_x509_crt_get_raw_issuer_dn = libgnutls.gnutls_x509_crt_get_raw_issuer_dn
-gnutls_x509_crt_get_raw_issuer_dn.argtypes = [gnutls_x509_crt_t, POINTER(gnutls_datum_t)]
+gnutls_x509_crt_get_raw_issuer_dn.argtypes = [
+    gnutls_x509_crt_t,
+    POINTER(gnutls_datum_t),
+]
 gnutls_x509_crt_get_raw_issuer_dn.restype = c_int
 
 gnutls_x509_crt_get_serial = libgnutls.gnutls_x509_crt_get_serial
@@ -1055,7 +1896,9 @@ gnutls_x509_crt_get_signature = libgnutls.gnutls_x509_crt_get_signature
 gnutls_x509_crt_get_signature.argtypes = [gnutls_x509_crt_t, c_char_p, POINTER(size_t)]
 gnutls_x509_crt_get_signature.restype = c_int
 
-gnutls_x509_crt_get_signature_algorithm = libgnutls.gnutls_x509_crt_get_signature_algorithm
+gnutls_x509_crt_get_signature_algorithm = (
+    libgnutls.gnutls_x509_crt_get_signature_algorithm
+)
 gnutls_x509_crt_get_signature_algorithm.argtypes = [gnutls_x509_crt_t]
 gnutls_x509_crt_get_signature_algorithm.restype = c_int
 
@@ -1064,19 +1907,44 @@ gnutls_x509_crt_get_subject.argtypes = [gnutls_x509_crt_t, POINTER(gnutls_x509_d
 gnutls_x509_crt_get_subject.restype = c_int
 
 gnutls_x509_crt_get_subject_alt_name = libgnutls.gnutls_x509_crt_get_subject_alt_name
-gnutls_x509_crt_get_subject_alt_name.argtypes = [gnutls_x509_crt_t, c_uint, c_void_p, POINTER(size_t), POINTER(c_uint)]
+gnutls_x509_crt_get_subject_alt_name.argtypes = [
+    gnutls_x509_crt_t,
+    c_uint,
+    c_void_p,
+    POINTER(size_t),
+    POINTER(c_uint),
+]
 gnutls_x509_crt_get_subject_alt_name.restype = c_int
 
 gnutls_x509_crt_get_subject_alt_name2 = libgnutls.gnutls_x509_crt_get_subject_alt_name2
-gnutls_x509_crt_get_subject_alt_name2.argtypes = [gnutls_x509_crt_t, c_uint, c_void_p, POINTER(size_t), POINTER(c_uint), POINTER(c_uint)]
+gnutls_x509_crt_get_subject_alt_name2.argtypes = [
+    gnutls_x509_crt_t,
+    c_uint,
+    c_void_p,
+    POINTER(size_t),
+    POINTER(c_uint),
+    POINTER(c_uint),
+]
 gnutls_x509_crt_get_subject_alt_name2.restype = c_int
 
-gnutls_x509_crt_get_subject_alt_othername_oid = libgnutls.gnutls_x509_crt_get_subject_alt_othername_oid
-gnutls_x509_crt_get_subject_alt_othername_oid.argtypes = [gnutls_x509_crt_t, c_uint, c_void_p, POINTER(size_t)]
+gnutls_x509_crt_get_subject_alt_othername_oid = (
+    libgnutls.gnutls_x509_crt_get_subject_alt_othername_oid
+)
+gnutls_x509_crt_get_subject_alt_othername_oid.argtypes = [
+    gnutls_x509_crt_t,
+    c_uint,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_crt_get_subject_alt_othername_oid.restype = c_int
 
 gnutls_x509_crt_get_subject_key_id = libgnutls.gnutls_x509_crt_get_subject_key_id
-gnutls_x509_crt_get_subject_key_id.argtypes = [gnutls_x509_crt_t, c_void_p, POINTER(size_t), POINTER(c_uint)]
+gnutls_x509_crt_get_subject_key_id.argtypes = [
+    gnutls_x509_crt_t,
+    c_void_p,
+    POINTER(size_t),
+    POINTER(c_uint),
+]
 gnutls_x509_crt_get_subject_key_id.restype = c_int
 
 gnutls_x509_crt_get_version = libgnutls.gnutls_x509_crt_get_version
@@ -1084,7 +1952,11 @@ gnutls_x509_crt_get_version.argtypes = [gnutls_x509_crt_t]
 gnutls_x509_crt_get_version.restype = c_int
 
 gnutls_x509_crt_import = libgnutls.gnutls_x509_crt_import
-gnutls_x509_crt_import.argtypes = [gnutls_x509_crt_t, POINTER(gnutls_datum_t), gnutls_x509_crt_fmt_t]
+gnutls_x509_crt_import.argtypes = [
+    gnutls_x509_crt_t,
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_x509_crt_import.restype = c_int
 
 gnutls_x509_crt_init = libgnutls.gnutls_x509_crt_init
@@ -1092,15 +1964,34 @@ gnutls_x509_crt_init.argtypes = [POINTER(gnutls_x509_crt_t)]
 gnutls_x509_crt_init.restype = c_int
 
 gnutls_x509_crt_list_import = libgnutls.gnutls_x509_crt_list_import
-gnutls_x509_crt_list_import.argtypes = [POINTER(gnutls_x509_crt_t), POINTER(c_uint), POINTER(gnutls_datum_t), gnutls_x509_crt_fmt_t, c_uint]
+gnutls_x509_crt_list_import.argtypes = [
+    POINTER(gnutls_x509_crt_t),
+    POINTER(c_uint),
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+    c_uint,
+]
 gnutls_x509_crt_list_import.restype = c_int
 
 gnutls_x509_crt_list_verify = libgnutls.gnutls_x509_crt_list_verify
-gnutls_x509_crt_list_verify.argtypes = [POINTER(gnutls_x509_crt_t), c_int, POINTER(gnutls_x509_crt_t), c_int, POINTER(gnutls_x509_crl_t), c_int, c_uint, POINTER(c_uint)]
+gnutls_x509_crt_list_verify.argtypes = [
+    POINTER(gnutls_x509_crt_t),
+    c_int,
+    POINTER(gnutls_x509_crt_t),
+    c_int,
+    POINTER(gnutls_x509_crl_t),
+    c_int,
+    c_uint,
+    POINTER(c_uint),
+]
 gnutls_x509_crt_list_verify.restype = c_int
 
 gnutls_x509_crt_print = libgnutls.gnutls_x509_crt_print
-gnutls_x509_crt_print.argtypes = [gnutls_x509_crt_t, gnutls_certificate_print_formats_t, POINTER(gnutls_datum_t)]
+gnutls_x509_crt_print.argtypes = [
+    gnutls_x509_crt_t,
+    gnutls_certificate_print_formats_t,
+    POINTER(gnutls_datum_t),
+]
 gnutls_x509_crt_print.restype = c_int
 
 gnutls_x509_crt_set_activation_time = libgnutls.gnutls_x509_crt_set_activation_time
@@ -1120,7 +2011,12 @@ gnutls_x509_crt_set_ca_status.argtypes = [gnutls_x509_crt_t, c_uint]
 gnutls_x509_crt_set_ca_status.restype = c_int
 
 gnutls_x509_crt_set_crl_dist_points = libgnutls.gnutls_x509_crt_set_crl_dist_points
-gnutls_x509_crt_set_crl_dist_points.argtypes = [gnutls_x509_crt_t, gnutls_x509_subject_alt_name_t, c_void_p, c_uint]
+gnutls_x509_crt_set_crl_dist_points.argtypes = [
+    gnutls_x509_crt_t,
+    gnutls_x509_subject_alt_name_t,
+    c_void_p,
+    c_uint,
+]
 gnutls_x509_crt_set_crl_dist_points.restype = c_int
 
 gnutls_x509_crt_set_crq = libgnutls.gnutls_x509_crt_set_crq
@@ -1128,7 +2024,13 @@ gnutls_x509_crt_set_crq.argtypes = [gnutls_x509_crt_t, gnutls_x509_crq_t]
 gnutls_x509_crt_set_crq.restype = c_int
 
 gnutls_x509_crt_set_dn_by_oid = libgnutls.gnutls_x509_crt_set_dn_by_oid
-gnutls_x509_crt_set_dn_by_oid.argtypes = [gnutls_x509_crt_t, c_char_p, c_uint, c_void_p, c_uint]
+gnutls_x509_crt_set_dn_by_oid.argtypes = [
+    gnutls_x509_crt_t,
+    c_char_p,
+    c_uint,
+    c_void_p,
+    c_uint,
+]
 gnutls_x509_crt_set_dn_by_oid.restype = c_int
 
 gnutls_x509_crt_set_expiration_time = libgnutls.gnutls_x509_crt_set_expiration_time
@@ -1136,11 +2038,23 @@ gnutls_x509_crt_set_expiration_time.argtypes = [gnutls_x509_crt_t, time_t]
 gnutls_x509_crt_set_expiration_time.restype = c_int
 
 gnutls_x509_crt_set_extension_by_oid = libgnutls.gnutls_x509_crt_set_extension_by_oid
-gnutls_x509_crt_set_extension_by_oid.argtypes = [gnutls_x509_crt_t, c_char_p, c_void_p, size_t, c_uint]
+gnutls_x509_crt_set_extension_by_oid.argtypes = [
+    gnutls_x509_crt_t,
+    c_char_p,
+    c_void_p,
+    size_t,
+    c_uint,
+]
 gnutls_x509_crt_set_extension_by_oid.restype = c_int
 
 gnutls_x509_crt_set_issuer_dn_by_oid = libgnutls.gnutls_x509_crt_set_issuer_dn_by_oid
-gnutls_x509_crt_set_issuer_dn_by_oid.argtypes = [gnutls_x509_crt_t, c_char_p, c_uint, c_void_p, c_uint]
+gnutls_x509_crt_set_issuer_dn_by_oid.argtypes = [
+    gnutls_x509_crt_t,
+    c_char_p,
+    c_uint,
+    c_void_p,
+    c_uint,
+]
 gnutls_x509_crt_set_issuer_dn_by_oid.restype = c_int
 
 gnutls_x509_crt_set_key = libgnutls.gnutls_x509_crt_set_key
@@ -1156,19 +2070,37 @@ gnutls_x509_crt_set_key_usage.argtypes = [gnutls_x509_crt_t, c_uint]
 gnutls_x509_crt_set_key_usage.restype = c_int
 
 gnutls_x509_crt_set_proxy = libgnutls.gnutls_x509_crt_set_proxy
-gnutls_x509_crt_set_proxy.argtypes = [gnutls_x509_crt_t, c_int, c_char_p, c_char_p, size_t]
+gnutls_x509_crt_set_proxy.argtypes = [
+    gnutls_x509_crt_t,
+    c_int,
+    c_char_p,
+    c_char_p,
+    size_t,
+]
 gnutls_x509_crt_set_proxy.restype = c_int
 
 gnutls_x509_crt_set_proxy_dn = libgnutls.gnutls_x509_crt_set_proxy_dn
-gnutls_x509_crt_set_proxy_dn.argtypes = [gnutls_x509_crt_t, gnutls_x509_crt_t, c_uint, c_void_p, c_uint]
+gnutls_x509_crt_set_proxy_dn.argtypes = [
+    gnutls_x509_crt_t,
+    gnutls_x509_crt_t,
+    c_uint,
+    c_void_p,
+    c_uint,
+]
 gnutls_x509_crt_set_proxy_dn.restype = c_int
 
 gnutls_x509_crt_set_serial = libgnutls.gnutls_x509_crt_set_serial
 gnutls_x509_crt_set_serial.argtypes = [gnutls_x509_crt_t, c_void_p, size_t]
 gnutls_x509_crt_set_serial.restype = c_int
 
-gnutls_x509_crt_set_subject_alternative_name = libgnutls.gnutls_x509_crt_set_subject_alternative_name
-gnutls_x509_crt_set_subject_alternative_name.argtypes = [gnutls_x509_crt_t, gnutls_x509_subject_alt_name_t, c_char_p]
+gnutls_x509_crt_set_subject_alternative_name = (
+    libgnutls.gnutls_x509_crt_set_subject_alternative_name
+)
+gnutls_x509_crt_set_subject_alternative_name.argtypes = [
+    gnutls_x509_crt_t,
+    gnutls_x509_subject_alt_name_t,
+    c_char_p,
+]
 gnutls_x509_crt_set_subject_alternative_name.restype = c_int
 
 gnutls_x509_crt_set_subject_key_id = libgnutls.gnutls_x509_crt_set_subject_key_id
@@ -1180,15 +2112,31 @@ gnutls_x509_crt_set_version.argtypes = [gnutls_x509_crt_t, c_uint]
 gnutls_x509_crt_set_version.restype = c_int
 
 gnutls_x509_crt_sign = libgnutls.gnutls_x509_crt_sign
-gnutls_x509_crt_sign.argtypes = [gnutls_x509_crt_t, gnutls_x509_crt_t, gnutls_x509_privkey_t]
+gnutls_x509_crt_sign.argtypes = [
+    gnutls_x509_crt_t,
+    gnutls_x509_crt_t,
+    gnutls_x509_privkey_t,
+]
 gnutls_x509_crt_sign.restype = c_int
 
 gnutls_x509_crt_sign2 = libgnutls.gnutls_x509_crt_sign2
-gnutls_x509_crt_sign2.argtypes = [gnutls_x509_crt_t, gnutls_x509_crt_t, gnutls_x509_privkey_t, gnutls_digest_algorithm_t, c_uint]
+gnutls_x509_crt_sign2.argtypes = [
+    gnutls_x509_crt_t,
+    gnutls_x509_crt_t,
+    gnutls_x509_privkey_t,
+    gnutls_digest_algorithm_t,
+    c_uint,
+]
 gnutls_x509_crt_sign2.restype = c_int
 
 gnutls_x509_crt_verify = libgnutls.gnutls_x509_crt_verify
-gnutls_x509_crt_verify.argtypes = [gnutls_x509_crt_t, POINTER(gnutls_x509_crt_t), c_int, c_uint, POINTER(c_uint)]
+gnutls_x509_crt_verify.argtypes = [
+    gnutls_x509_crt_t,
+    POINTER(gnutls_x509_crt_t),
+    c_int,
+    c_uint,
+    POINTER(c_uint),
+]
 gnutls_x509_crt_verify.restype = c_int
 
 gnutls_x509_dn_deinit = libgnutls.gnutls_x509_dn_deinit
@@ -1196,11 +2144,21 @@ gnutls_x509_dn_deinit.argtypes = [gnutls_x509_dn_t]
 gnutls_x509_dn_deinit.restype = None
 
 gnutls_x509_dn_export = libgnutls.gnutls_x509_dn_export
-gnutls_x509_dn_export.argtypes = [gnutls_x509_dn_t, gnutls_x509_crt_fmt_t, c_void_p, POINTER(size_t)]
+gnutls_x509_dn_export.argtypes = [
+    gnutls_x509_dn_t,
+    gnutls_x509_crt_fmt_t,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_dn_export.restype = c_int
 
 gnutls_x509_dn_get_rdn_ava = libgnutls.gnutls_x509_dn_get_rdn_ava
-gnutls_x509_dn_get_rdn_ava.argtypes = [gnutls_x509_dn_t, c_int, c_int, POINTER(gnutls_x509_ava_st)]
+gnutls_x509_dn_get_rdn_ava.argtypes = [
+    gnutls_x509_dn_t,
+    c_int,
+    c_int,
+    POINTER(gnutls_x509_ava_st),
+]
 gnutls_x509_dn_get_rdn_ava.restype = c_int
 
 gnutls_x509_dn_import = libgnutls.gnutls_x509_dn_import
@@ -1210,6 +2168,18 @@ gnutls_x509_dn_import.restype = c_int
 gnutls_x509_dn_init = libgnutls.gnutls_x509_dn_init
 gnutls_x509_dn_init.argtypes = [POINTER(gnutls_x509_dn_t)]
 gnutls_x509_dn_init.restype = c_int
+
+gnutls_x509_dn_deinit = libgnutls.gnutls_x509_dn_deinit
+gnutls_x509_dn_deinit.argtypes = [gnutls_x509_dn_t]
+gnutls_x509_dn_deinit.restype = c_int
+
+gnutls_x509_dn_get_str = libgnutls.gnutls_x509_dn_get_str
+gnutls_x509_dn_get_str.argtypes = [gnutls_x509_dn_t, POINTER(gnutls_datum_t)]
+gnutls_x509_dn_get_str.restype = c_int
+
+gnutls_x509_dn_get_str2 = libgnutls.gnutls_x509_dn_get_str2
+gnutls_x509_dn_get_str2.argtypes = [gnutls_x509_dn_t, POINTER(gnutls_datum_t), c_uint]
+gnutls_x509_dn_get_str2.restype = c_int
 
 gnutls_x509_dn_oid_known = libgnutls.gnutls_x509_dn_oid_known
 gnutls_x509_dn_oid_known.argtypes = [c_char_p]
@@ -1224,19 +2194,46 @@ gnutls_x509_privkey_deinit.argtypes = [gnutls_x509_privkey_t]
 gnutls_x509_privkey_deinit.restype = None
 
 gnutls_x509_privkey_export = libgnutls.gnutls_x509_privkey_export
-gnutls_x509_privkey_export.argtypes = [gnutls_x509_privkey_t, gnutls_x509_crt_fmt_t, c_void_p, POINTER(size_t)]
+gnutls_x509_privkey_export.argtypes = [
+    gnutls_x509_privkey_t,
+    gnutls_x509_crt_fmt_t,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_privkey_export.restype = c_int
 
 gnutls_x509_privkey_export_dsa_raw = libgnutls.gnutls_x509_privkey_export_dsa_raw
-gnutls_x509_privkey_export_dsa_raw.argtypes = [gnutls_x509_privkey_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+gnutls_x509_privkey_export_dsa_raw.argtypes = [
+    gnutls_x509_privkey_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
 gnutls_x509_privkey_export_dsa_raw.restype = c_int
 
 gnutls_x509_privkey_export_pkcs8 = libgnutls.gnutls_x509_privkey_export_pkcs8
-gnutls_x509_privkey_export_pkcs8.argtypes = [gnutls_x509_privkey_t, gnutls_x509_crt_fmt_t, c_char_p, c_uint, c_void_p, POINTER(size_t)]
+gnutls_x509_privkey_export_pkcs8.argtypes = [
+    gnutls_x509_privkey_t,
+    gnutls_x509_crt_fmt_t,
+    c_char_p,
+    c_uint,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_privkey_export_pkcs8.restype = c_int
 
 gnutls_x509_privkey_export_rsa_raw = libgnutls.gnutls_x509_privkey_export_rsa_raw
-gnutls_x509_privkey_export_rsa_raw.argtypes = [gnutls_x509_privkey_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+gnutls_x509_privkey_export_rsa_raw.argtypes = [
+    gnutls_x509_privkey_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
 gnutls_x509_privkey_export_rsa_raw.restype = c_int
 
 gnutls_x509_privkey_fix = libgnutls.gnutls_x509_privkey_fix
@@ -1244,11 +2241,21 @@ gnutls_x509_privkey_fix.argtypes = [gnutls_x509_privkey_t]
 gnutls_x509_privkey_fix.restype = c_int
 
 gnutls_x509_privkey_generate = libgnutls.gnutls_x509_privkey_generate
-gnutls_x509_privkey_generate.argtypes = [gnutls_x509_privkey_t, gnutls_pk_algorithm_t, c_uint, c_uint]
+gnutls_x509_privkey_generate.argtypes = [
+    gnutls_x509_privkey_t,
+    gnutls_pk_algorithm_t,
+    c_uint,
+    c_uint,
+]
 gnutls_x509_privkey_generate.restype = c_int
 
 gnutls_x509_privkey_get_key_id = libgnutls.gnutls_x509_privkey_get_key_id
-gnutls_x509_privkey_get_key_id.argtypes = [gnutls_x509_privkey_t, c_uint, POINTER(c_ubyte), POINTER(size_t)]
+gnutls_x509_privkey_get_key_id.argtypes = [
+    gnutls_x509_privkey_t,
+    c_uint,
+    POINTER(c_ubyte),
+    POINTER(size_t),
+]
 gnutls_x509_privkey_get_key_id.restype = c_int
 
 gnutls_x509_privkey_get_pk_algorithm = libgnutls.gnutls_x509_privkey_get_pk_algorithm
@@ -1256,19 +2263,44 @@ gnutls_x509_privkey_get_pk_algorithm.argtypes = [gnutls_x509_privkey_t]
 gnutls_x509_privkey_get_pk_algorithm.restype = c_int
 
 gnutls_x509_privkey_import = libgnutls.gnutls_x509_privkey_import
-gnutls_x509_privkey_import.argtypes = [gnutls_x509_privkey_t, POINTER(gnutls_datum_t), gnutls_x509_crt_fmt_t]
+gnutls_x509_privkey_import.argtypes = [
+    gnutls_x509_privkey_t,
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+]
 gnutls_x509_privkey_import.restype = c_int
 
 gnutls_x509_privkey_import_dsa_raw = libgnutls.gnutls_x509_privkey_import_dsa_raw
-gnutls_x509_privkey_import_dsa_raw.argtypes = [gnutls_x509_privkey_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+gnutls_x509_privkey_import_dsa_raw.argtypes = [
+    gnutls_x509_privkey_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
 gnutls_x509_privkey_import_dsa_raw.restype = c_int
 
 gnutls_x509_privkey_import_pkcs8 = libgnutls.gnutls_x509_privkey_import_pkcs8
-gnutls_x509_privkey_import_pkcs8.argtypes = [gnutls_x509_privkey_t, POINTER(gnutls_datum_t), gnutls_x509_crt_fmt_t, c_char_p, c_uint]
+gnutls_x509_privkey_import_pkcs8.argtypes = [
+    gnutls_x509_privkey_t,
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+    c_char_p,
+    c_uint,
+]
 gnutls_x509_privkey_import_pkcs8.restype = c_int
 
 gnutls_x509_privkey_import_rsa_raw = libgnutls.gnutls_x509_privkey_import_rsa_raw
-gnutls_x509_privkey_import_rsa_raw.argtypes = [gnutls_x509_privkey_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+gnutls_x509_privkey_import_rsa_raw.argtypes = [
+    gnutls_x509_privkey_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
 gnutls_x509_privkey_import_rsa_raw.restype = c_int
 
 gnutls_x509_privkey_init = libgnutls.gnutls_x509_privkey_init
@@ -1276,24 +2308,182 @@ gnutls_x509_privkey_init.argtypes = [POINTER(gnutls_x509_privkey_t)]
 gnutls_x509_privkey_init.restype = c_int
 
 gnutls_x509_privkey_sign_data = libgnutls.gnutls_x509_privkey_sign_data
-gnutls_x509_privkey_sign_data.argtypes = [gnutls_x509_privkey_t, gnutls_digest_algorithm_t, c_uint, POINTER(gnutls_datum_t), c_void_p, POINTER(size_t)]
+gnutls_x509_privkey_sign_data.argtypes = [
+    gnutls_x509_privkey_t,
+    gnutls_digest_algorithm_t,
+    c_uint,
+    POINTER(gnutls_datum_t),
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_privkey_sign_data.restype = c_int
 
 gnutls_x509_privkey_sign_hash = libgnutls.gnutls_x509_privkey_sign_hash
-gnutls_x509_privkey_sign_hash.argtypes = [gnutls_x509_privkey_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+gnutls_x509_privkey_sign_hash.argtypes = [
+    gnutls_x509_privkey_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
 gnutls_x509_privkey_sign_hash.restype = c_int
+
+gnutls_x509_trust_list_init = libgnutls.gnutls_x509_trust_list_init
+gnutls_x509_trust_list_init.argtypes = [POINTER(gnutls_x509_trust_list_t), c_uint]
+gnutls_x509_trust_list_init.restype = c_int
+
+gnutls_x509_trust_list_deinit = libgnutls.gnutls_x509_trust_list_deinit
+gnutls_x509_trust_list_deinit.argtypes = [gnutls_x509_trust_list_t, c_uint]
+gnutls_x509_trust_list_deinit.restype = None
+
+gnutls_x509_trust_list_add_cas = libgnutls.gnutls_x509_trust_list_add_cas
+gnutls_x509_trust_list_add_cas.argtypes = [
+    gnutls_x509_trust_list_t,
+    POINTER(gnutls_x509_crt_t),
+    c_uint,
+    c_uint,
+]
+gnutls_x509_trust_list_add_cas.restype = c_int
+
+gnutls_x509_trust_list_add_trust_mem = libgnutls.gnutls_x509_trust_list_add_trust_mem
+gnutls_x509_trust_list_add_trust_mem.argtypes = [
+    gnutls_x509_trust_list_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+    gnutls_x509_crt_fmt_t,
+    c_uint,
+    c_uint,
+]
+gnutls_x509_trust_list_add_trust_mem.restype = c_int
 
 gnutls_x509_rdn_get = libgnutls.gnutls_x509_rdn_get
 gnutls_x509_rdn_get.argtypes = [POINTER(gnutls_datum_t), c_char_p, POINTER(size_t)]
 gnutls_x509_rdn_get.restype = c_int
 
 gnutls_x509_rdn_get_by_oid = libgnutls.gnutls_x509_rdn_get_by_oid
-gnutls_x509_rdn_get_by_oid.argtypes = [POINTER(gnutls_datum_t), c_char_p, c_int, c_uint, c_void_p, POINTER(size_t)]
+gnutls_x509_rdn_get_by_oid.argtypes = [
+    POINTER(gnutls_datum_t),
+    c_char_p,
+    c_int,
+    c_uint,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_rdn_get_by_oid.restype = c_int
 
 gnutls_x509_rdn_get_oid = libgnutls.gnutls_x509_rdn_get_oid
-gnutls_x509_rdn_get_oid.argtypes = [POINTER(gnutls_datum_t), c_int, c_void_p, POINTER(size_t)]
+gnutls_x509_rdn_get_oid.argtypes = [
+    POINTER(gnutls_datum_t),
+    c_int,
+    c_void_p,
+    POINTER(size_t),
+]
 gnutls_x509_rdn_get_oid.restype = c_int
+
+gnutls_cipher_init = libgnutls.gnutls_cipher_init
+gnutls_cipher_init.argtypes = [
+    POINTER(gnutls_cipher_hd_t),
+    gnutls_cipher_algorithm_t,
+    POINTER(gnutls_datum_t),
+    POINTER(gnutls_datum_t),
+]
+gnutls_cipher_init.restype = c_int
+
+gnutls_cipher_deinit = libgnutls.gnutls_cipher_deinit
+gnutls_cipher_deinit.argtypes = [gnutls_cipher_hd_t]
+gnutls_cipher_deinit.restype = None
+
+gnutls_cipher_decrypt = libgnutls.gnutls_cipher_decrypt
+gnutls_cipher_decrypt.argtypes = [gnutls_cipher_hd_t, c_void_p, size_t]
+gnutls_cipher_decrypt.restype = c_int
+
+gnutls_cipher_decrypt2 = libgnutls.gnutls_cipher_decrypt2
+gnutls_cipher_decrypt2.argtypes = [
+    gnutls_cipher_hd_t,
+    c_void_p,
+    size_t,
+    c_void_p,
+    size_t,
+]
+gnutls_cipher_decrypt2.restype = c_int
+
+gnutls_cipher_encrypt = libgnutls.gnutls_cipher_encrypt
+gnutls_cipher_encrypt.argtypes = [gnutls_cipher_hd_t, c_void_p, size_t]
+gnutls_cipher_encrypt.restype = c_int
+
+gnutls_cipher_encrypt2 = libgnutls.gnutls_cipher_encrypt2
+gnutls_cipher_encrypt2.argtypes = [
+    gnutls_cipher_hd_t,
+    c_void_p,
+    size_t,
+    c_void_p,
+    size_t,
+]
+gnutls_cipher_encrypt2.restype = c_int
+
+gnutls_cipher_add_auth = libgnutls.gnutls_cipher_add_auth
+gnutls_cipher_add_auth.argtypes = [gnutls_cipher_hd_t, c_void_p, size_t]
+gnutls_cipher_add_auth.restype = c_int
+
+gnutls_cipher_get_block_size = libgnutls.gnutls_cipher_get_block_size
+gnutls_cipher_get_block_size.argtypes = [gnutls_cipher_algorithm_t]
+gnutls_cipher_get_block_size.restype = c_uint
+
+gnutls_cipher_get_iv_size = libgnutls.gnutls_cipher_get_iv_size
+gnutls_cipher_get_iv_size.argtypes = [gnutls_cipher_algorithm_t]
+gnutls_cipher_get_iv_size.restype = c_uint
+
+gnutls_cipher_get_tag_size = libgnutls.gnutls_cipher_get_tag_size
+gnutls_cipher_get_tag_size = [gnutls_cipher_algorithm_t]
+gnutls_cipher_get_tag_size = c_uint
+
+gnutls_cipher_set_iv = libgnutls.gnutls_cipher_set_iv
+gnutls_cipher_set_iv.argtypes = [gnutls_cipher_hd_t, c_void_p, size_t]
+gnutls_cipher_set_iv.restype = None
+
+gnutls_cipher_tag = libgnutls.gnutls_cipher_tag
+gnutls_cipher_tag.argtypes = [gnutls_cipher_hd_t, c_void_p, size_t]
+gnutls_cipher_tag.restype = c_int
+
+gnutls_aead_cipher_init = libgnutls.gnutls_aead_cipher_init
+gnutls_aead_cipher_init.argtypes = [
+    POINTER(gnutls_aead_cipher_hd_t),
+    gnutls_cipher_algorithm_t,
+    POINTER(gnutls_datum_t),
+]
+gnutls_aead_cipher_init.restype = c_int
+
+gnutls_aead_cipher_deinit = libgnutls.gnutls_aead_cipher_deinit
+gnutls_aead_cipher_deinit.argtypes = [gnutls_aead_cipher_hd_t]
+gnutls_aead_cipher_deinit.restype = None
+
+gnutls_aead_cipher_decrypt = libgnutls.gnutls_aead_cipher_decrypt
+gnutls_aead_cipher_decrypt.argtypes = [
+    gnutls_aead_cipher_hd_t,
+    c_void_p,
+    size_t,
+    c_void_p,
+    size_t,
+    size_t,
+    c_void_p,
+    size_t,
+    c_void_p,
+    POINTER(size_t),
+]
+gnutls_aead_cipher_decrypt.restype = c_int
+
+gnutls_aead_cipher_encrypt = libgnutls.gnutls_aead_cipher_encrypt
+gnutls_aead_cipher_encrypt.argtypes = [
+    gnutls_aead_cipher_hd_t,
+    c_void_p,
+    size_t,
+    c_void_p,
+    size_t,
+    size_t,
+    c_void_p,
+    size_t,
+    c_void_p,
+    POINTER(size_t),
+]
+gnutls_aead_cipher_encrypt.restype = c_int
 
 
 # The openpgp related functions are not always present (on windows for example they are missing)
@@ -1305,31 +2495,78 @@ except AttributeError:
     pass
 else:
     gnutls_certificate_set_openpgp_key = libgnutls.gnutls_certificate_set_openpgp_key
-    gnutls_certificate_set_openpgp_key.argtypes = [gnutls_certificate_credentials_t, gnutls_openpgp_crt_t, gnutls_openpgp_privkey_t]
+    gnutls_certificate_set_openpgp_key.argtypes = [
+        gnutls_certificate_credentials_t,
+        gnutls_openpgp_crt_t,
+        gnutls_openpgp_privkey_t,
+    ]
     gnutls_certificate_set_openpgp_key.restype = c_int
 
-    gnutls_certificate_set_openpgp_key_file = libgnutls.gnutls_certificate_set_openpgp_key_file
-    gnutls_certificate_set_openpgp_key_file.argtypes = [gnutls_certificate_credentials_t, c_char_p, c_char_p, gnutls_openpgp_crt_fmt_t]
+    gnutls_certificate_set_openpgp_key_file = (
+        libgnutls.gnutls_certificate_set_openpgp_key_file
+    )
+    gnutls_certificate_set_openpgp_key_file.argtypes = [
+        gnutls_certificate_credentials_t,
+        c_char_p,
+        c_char_p,
+        gnutls_openpgp_crt_fmt_t,
+    ]
     gnutls_certificate_set_openpgp_key_file.restype = c_int
 
-    gnutls_certificate_set_openpgp_key_file2 = libgnutls.gnutls_certificate_set_openpgp_key_file2
-    gnutls_certificate_set_openpgp_key_file2.argtypes = [gnutls_certificate_credentials_t, c_char_p, c_char_p, c_char_p, gnutls_openpgp_crt_fmt_t]
+    gnutls_certificate_set_openpgp_key_file2 = (
+        libgnutls.gnutls_certificate_set_openpgp_key_file2
+    )
+    gnutls_certificate_set_openpgp_key_file2.argtypes = [
+        gnutls_certificate_credentials_t,
+        c_char_p,
+        c_char_p,
+        c_char_p,
+        gnutls_openpgp_crt_fmt_t,
+    ]
     gnutls_certificate_set_openpgp_key_file2.restype = c_int
 
-    gnutls_certificate_set_openpgp_key_mem = libgnutls.gnutls_certificate_set_openpgp_key_mem
-    gnutls_certificate_set_openpgp_key_mem.argtypes = [gnutls_certificate_credentials_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), gnutls_openpgp_crt_fmt_t]
+    gnutls_certificate_set_openpgp_key_mem = (
+        libgnutls.gnutls_certificate_set_openpgp_key_mem
+    )
+    gnutls_certificate_set_openpgp_key_mem.argtypes = [
+        gnutls_certificate_credentials_t,
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        gnutls_openpgp_crt_fmt_t,
+    ]
     gnutls_certificate_set_openpgp_key_mem.restype = c_int
 
-    gnutls_certificate_set_openpgp_key_mem2 = libgnutls.gnutls_certificate_set_openpgp_key_mem2
-    gnutls_certificate_set_openpgp_key_mem2.argtypes = [gnutls_certificate_credentials_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), c_char_p, gnutls_openpgp_crt_fmt_t]
+    gnutls_certificate_set_openpgp_key_mem2 = (
+        libgnutls.gnutls_certificate_set_openpgp_key_mem2
+    )
+    gnutls_certificate_set_openpgp_key_mem2.argtypes = [
+        gnutls_certificate_credentials_t,
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        c_char_p,
+        gnutls_openpgp_crt_fmt_t,
+    ]
     gnutls_certificate_set_openpgp_key_mem2.restype = c_int
 
-    gnutls_certificate_set_openpgp_keyring_file = libgnutls.gnutls_certificate_set_openpgp_keyring_file
-    gnutls_certificate_set_openpgp_keyring_file.argtypes = [gnutls_certificate_credentials_t, c_char_p, gnutls_openpgp_crt_fmt_t]
+    gnutls_certificate_set_openpgp_keyring_file = (
+        libgnutls.gnutls_certificate_set_openpgp_keyring_file
+    )
+    gnutls_certificate_set_openpgp_keyring_file.argtypes = [
+        gnutls_certificate_credentials_t,
+        c_char_p,
+        gnutls_openpgp_crt_fmt_t,
+    ]
     gnutls_certificate_set_openpgp_keyring_file.restype = c_int
 
-    gnutls_certificate_set_openpgp_keyring_mem = libgnutls.gnutls_certificate_set_openpgp_keyring_mem
-    gnutls_certificate_set_openpgp_keyring_mem.argtypes = [gnutls_certificate_credentials_t, POINTER(c_ubyte), size_t, gnutls_openpgp_crt_fmt_t]
+    gnutls_certificate_set_openpgp_keyring_mem = (
+        libgnutls.gnutls_certificate_set_openpgp_keyring_mem
+    )
+    gnutls_certificate_set_openpgp_keyring_mem.argtypes = [
+        gnutls_certificate_credentials_t,
+        POINTER(c_ubyte),
+        size_t,
+        gnutls_openpgp_crt_fmt_t,
+    ]
     gnutls_certificate_set_openpgp_keyring_mem.restype = c_int
 
     gnutls_openpgp_crt_check_hostname = libgnutls.gnutls_openpgp_crt_check_hostname
@@ -1341,25 +2578,44 @@ else:
     gnutls_openpgp_crt_deinit.restype = None
 
     gnutls_openpgp_crt_export = libgnutls.gnutls_openpgp_crt_export
-    gnutls_openpgp_crt_export.argtypes = [gnutls_openpgp_crt_t, gnutls_openpgp_crt_fmt_t, c_void_p, POINTER(size_t)]
+    gnutls_openpgp_crt_export.argtypes = [
+        gnutls_openpgp_crt_t,
+        gnutls_openpgp_crt_fmt_t,
+        c_void_p,
+        POINTER(size_t),
+    ]
     gnutls_openpgp_crt_export.restype = c_int
 
     gnutls_openpgp_crt_get_auth_subkey = libgnutls.gnutls_openpgp_crt_get_auth_subkey
-    gnutls_openpgp_crt_get_auth_subkey.argtypes = [gnutls_openpgp_crt_t, POINTER(c_ubyte), c_uint]
+    gnutls_openpgp_crt_get_auth_subkey.argtypes = [
+        gnutls_openpgp_crt_t,
+        POINTER(c_ubyte),
+        c_uint,
+    ]
     gnutls_openpgp_crt_get_auth_subkey.restype = c_int
 
-    gnutls_openpgp_crt_get_creation_time = libgnutls.gnutls_openpgp_crt_get_creation_time
+    gnutls_openpgp_crt_get_creation_time = (
+        libgnutls.gnutls_openpgp_crt_get_creation_time
+    )
     gnutls_openpgp_crt_get_creation_time.argtypes = [gnutls_openpgp_crt_t]
     gnutls_openpgp_crt_get_creation_time.restype = time_t
     gnutls_openpgp_crt_get_creation_time.errmsg = "cannot get OpenPGP key creation time"
 
-    gnutls_openpgp_crt_get_expiration_time = libgnutls.gnutls_openpgp_crt_get_expiration_time
+    gnutls_openpgp_crt_get_expiration_time = (
+        libgnutls.gnutls_openpgp_crt_get_expiration_time
+    )
     gnutls_openpgp_crt_get_expiration_time.argtypes = [gnutls_openpgp_crt_t]
     gnutls_openpgp_crt_get_expiration_time.restype = time_t
-    gnutls_openpgp_crt_get_expiration_time.errmsg = "cannot get OpenPGP key expiration time"
+    gnutls_openpgp_crt_get_expiration_time.errmsg = (
+        "cannot get OpenPGP key expiration time"
+    )
 
     gnutls_openpgp_crt_get_fingerprint = libgnutls.gnutls_openpgp_crt_get_fingerprint
-    gnutls_openpgp_crt_get_fingerprint.argtypes = [gnutls_openpgp_crt_t, c_void_p, POINTER(size_t)]
+    gnutls_openpgp_crt_get_fingerprint.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_void_p,
+        POINTER(size_t),
+    ]
     gnutls_openpgp_crt_get_fingerprint.restype = c_int
 
     gnutls_openpgp_crt_get_key_id = libgnutls.gnutls_openpgp_crt_get_key_id
@@ -1371,26 +2627,51 @@ else:
     gnutls_openpgp_crt_get_key_usage.restype = c_int
 
     gnutls_openpgp_crt_get_name = libgnutls.gnutls_openpgp_crt_get_name
-    gnutls_openpgp_crt_get_name.argtypes = [gnutls_openpgp_crt_t, c_int, c_char_p, POINTER(size_t)]
+    gnutls_openpgp_crt_get_name.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_int,
+        c_char_p,
+        POINTER(size_t),
+    ]
     gnutls_openpgp_crt_get_name.restype = c_int
 
     gnutls_openpgp_crt_get_pk_algorithm = libgnutls.gnutls_openpgp_crt_get_pk_algorithm
-    gnutls_openpgp_crt_get_pk_algorithm.argtypes = [gnutls_openpgp_crt_t, POINTER(c_uint)]
+    gnutls_openpgp_crt_get_pk_algorithm.argtypes = [
+        gnutls_openpgp_crt_t,
+        POINTER(c_uint),
+    ]
     gnutls_openpgp_crt_get_pk_algorithm.restype = gnutls_pk_algorithm_t
 
     gnutls_openpgp_crt_get_pk_dsa_raw = libgnutls.gnutls_openpgp_crt_get_pk_dsa_raw
-    gnutls_openpgp_crt_get_pk_dsa_raw.argtypes = [gnutls_openpgp_crt_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+    gnutls_openpgp_crt_get_pk_dsa_raw.argtypes = [
+        gnutls_openpgp_crt_t,
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+    ]
     gnutls_openpgp_crt_get_pk_dsa_raw.restype = c_int
 
     gnutls_openpgp_crt_get_pk_rsa_raw = libgnutls.gnutls_openpgp_crt_get_pk_rsa_raw
-    gnutls_openpgp_crt_get_pk_rsa_raw.argtypes = [gnutls_openpgp_crt_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+    gnutls_openpgp_crt_get_pk_rsa_raw.argtypes = [
+        gnutls_openpgp_crt_t,
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+    ]
     gnutls_openpgp_crt_get_pk_rsa_raw.restype = c_int
 
-    gnutls_openpgp_crt_get_preferred_key_id = libgnutls.gnutls_openpgp_crt_get_preferred_key_id
-    gnutls_openpgp_crt_get_preferred_key_id.argtypes = [gnutls_openpgp_crt_t, POINTER(c_ubyte)]
+    gnutls_openpgp_crt_get_preferred_key_id = (
+        libgnutls.gnutls_openpgp_crt_get_preferred_key_id
+    )
+    gnutls_openpgp_crt_get_preferred_key_id.argtypes = [
+        gnutls_openpgp_crt_t,
+        POINTER(c_ubyte),
+    ]
     gnutls_openpgp_crt_get_preferred_key_id.restype = c_int
 
-    gnutls_openpgp_crt_get_revoked_status = libgnutls.gnutls_openpgp_crt_get_revoked_status
+    gnutls_openpgp_crt_get_revoked_status = (
+        libgnutls.gnutls_openpgp_crt_get_revoked_status
+    )
     gnutls_openpgp_crt_get_revoked_status.argtypes = [gnutls_openpgp_crt_t]
     gnutls_openpgp_crt_get_revoked_status.restype = c_int
 
@@ -1398,46 +2679,105 @@ else:
     gnutls_openpgp_crt_get_subkey_count.argtypes = [gnutls_openpgp_crt_t]
     gnutls_openpgp_crt_get_subkey_count.restype = c_int
 
-    gnutls_openpgp_crt_get_subkey_creation_time = libgnutls.gnutls_openpgp_crt_get_subkey_creation_time
-    gnutls_openpgp_crt_get_subkey_creation_time.argtypes = [gnutls_openpgp_crt_t, c_uint]
+    gnutls_openpgp_crt_get_subkey_creation_time = (
+        libgnutls.gnutls_openpgp_crt_get_subkey_creation_time
+    )
+    gnutls_openpgp_crt_get_subkey_creation_time.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_uint,
+    ]
     gnutls_openpgp_crt_get_subkey_creation_time.restype = time_t
-    gnutls_openpgp_crt_get_subkey_creation_time.errmsg = "cannot get OpenPGP subkey creation time"
+    gnutls_openpgp_crt_get_subkey_creation_time.errmsg = (
+        "cannot get OpenPGP subkey creation time"
+    )
 
-    gnutls_openpgp_crt_get_subkey_expiration_time = libgnutls.gnutls_openpgp_crt_get_subkey_expiration_time
-    gnutls_openpgp_crt_get_subkey_expiration_time.argtypes = [gnutls_openpgp_crt_t, c_uint]
+    gnutls_openpgp_crt_get_subkey_expiration_time = (
+        libgnutls.gnutls_openpgp_crt_get_subkey_expiration_time
+    )
+    gnutls_openpgp_crt_get_subkey_expiration_time.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_uint,
+    ]
     gnutls_openpgp_crt_get_subkey_expiration_time.restype = time_t
-    gnutls_openpgp_crt_get_subkey_expiration_time.errmsg = "cannot get OpenPGP subkey expiration time"
+    gnutls_openpgp_crt_get_subkey_expiration_time.errmsg = (
+        "cannot get OpenPGP subkey expiration time"
+    )
 
-    gnutls_openpgp_crt_get_subkey_fingerprint = libgnutls.gnutls_openpgp_crt_get_subkey_fingerprint
-    gnutls_openpgp_crt_get_subkey_fingerprint.argtypes = [gnutls_openpgp_crt_t, c_uint, c_void_p, POINTER(size_t)]
+    gnutls_openpgp_crt_get_subkey_fingerprint = (
+        libgnutls.gnutls_openpgp_crt_get_subkey_fingerprint
+    )
+    gnutls_openpgp_crt_get_subkey_fingerprint.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_uint,
+        c_void_p,
+        POINTER(size_t),
+    ]
     gnutls_openpgp_crt_get_subkey_fingerprint.restype = c_int
 
     gnutls_openpgp_crt_get_subkey_id = libgnutls.gnutls_openpgp_crt_get_subkey_id
-    gnutls_openpgp_crt_get_subkey_id.argtypes = [gnutls_openpgp_crt_t, c_uint, POINTER(c_ubyte)]
+    gnutls_openpgp_crt_get_subkey_id.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_uint,
+        POINTER(c_ubyte),
+    ]
     gnutls_openpgp_crt_get_subkey_id.restype = c_int
 
     gnutls_openpgp_crt_get_subkey_idx = libgnutls.gnutls_openpgp_crt_get_subkey_idx
-    gnutls_openpgp_crt_get_subkey_idx.argtypes = [gnutls_openpgp_crt_t, POINTER(c_ubyte)]
+    gnutls_openpgp_crt_get_subkey_idx.argtypes = [
+        gnutls_openpgp_crt_t,
+        POINTER(c_ubyte),
+    ]
     gnutls_openpgp_crt_get_subkey_idx.restype = c_int
 
-    gnutls_openpgp_crt_get_subkey_pk_algorithm = libgnutls.gnutls_openpgp_crt_get_subkey_pk_algorithm
-    gnutls_openpgp_crt_get_subkey_pk_algorithm.argtypes = [gnutls_openpgp_crt_t, c_uint, POINTER(c_uint)]
+    gnutls_openpgp_crt_get_subkey_pk_algorithm = (
+        libgnutls.gnutls_openpgp_crt_get_subkey_pk_algorithm
+    )
+    gnutls_openpgp_crt_get_subkey_pk_algorithm.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_uint,
+        POINTER(c_uint),
+    ]
     gnutls_openpgp_crt_get_subkey_pk_algorithm.restype = gnutls_pk_algorithm_t
 
-    gnutls_openpgp_crt_get_subkey_pk_dsa_raw = libgnutls.gnutls_openpgp_crt_get_subkey_pk_dsa_raw
-    gnutls_openpgp_crt_get_subkey_pk_dsa_raw.argtypes = [gnutls_openpgp_crt_t, c_uint, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+    gnutls_openpgp_crt_get_subkey_pk_dsa_raw = (
+        libgnutls.gnutls_openpgp_crt_get_subkey_pk_dsa_raw
+    )
+    gnutls_openpgp_crt_get_subkey_pk_dsa_raw.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_uint,
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+    ]
     gnutls_openpgp_crt_get_subkey_pk_dsa_raw.restype = c_int
 
-    gnutls_openpgp_crt_get_subkey_pk_rsa_raw = libgnutls.gnutls_openpgp_crt_get_subkey_pk_rsa_raw
-    gnutls_openpgp_crt_get_subkey_pk_rsa_raw.argtypes = [gnutls_openpgp_crt_t, c_uint, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+    gnutls_openpgp_crt_get_subkey_pk_rsa_raw = (
+        libgnutls.gnutls_openpgp_crt_get_subkey_pk_rsa_raw
+    )
+    gnutls_openpgp_crt_get_subkey_pk_rsa_raw.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_uint,
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+    ]
     gnutls_openpgp_crt_get_subkey_pk_rsa_raw.restype = c_int
 
-    gnutls_openpgp_crt_get_subkey_revoked_status = libgnutls.gnutls_openpgp_crt_get_subkey_revoked_status
-    gnutls_openpgp_crt_get_subkey_revoked_status.argtypes = [gnutls_openpgp_crt_t, c_uint]
+    gnutls_openpgp_crt_get_subkey_revoked_status = (
+        libgnutls.gnutls_openpgp_crt_get_subkey_revoked_status
+    )
+    gnutls_openpgp_crt_get_subkey_revoked_status.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_uint,
+    ]
     gnutls_openpgp_crt_get_subkey_revoked_status.restype = c_int
 
     gnutls_openpgp_crt_get_subkey_usage = libgnutls.gnutls_openpgp_crt_get_subkey_usage
-    gnutls_openpgp_crt_get_subkey_usage.argtypes = [gnutls_openpgp_crt_t, c_uint, POINTER(c_uint)]
+    gnutls_openpgp_crt_get_subkey_usage.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_uint,
+        POINTER(c_uint),
+    ]
     gnutls_openpgp_crt_get_subkey_usage.restype = c_int
 
     gnutls_openpgp_crt_get_version = libgnutls.gnutls_openpgp_crt_get_version
@@ -1445,7 +2785,11 @@ else:
     gnutls_openpgp_crt_get_version.restype = c_int
 
     gnutls_openpgp_crt_import = libgnutls.gnutls_openpgp_crt_import
-    gnutls_openpgp_crt_import.argtypes = [gnutls_openpgp_crt_t, POINTER(gnutls_datum_t), gnutls_openpgp_crt_fmt_t]
+    gnutls_openpgp_crt_import.argtypes = [
+        gnutls_openpgp_crt_t,
+        POINTER(gnutls_datum_t),
+        gnutls_openpgp_crt_fmt_t,
+    ]
     gnutls_openpgp_crt_import.restype = c_int
 
     gnutls_openpgp_crt_init = libgnutls.gnutls_openpgp_crt_init
@@ -1453,23 +2797,45 @@ else:
     gnutls_openpgp_crt_init.restype = c_int
 
     gnutls_openpgp_crt_print = libgnutls.gnutls_openpgp_crt_print
-    gnutls_openpgp_crt_print.argtypes = [gnutls_openpgp_crt_t, gnutls_certificate_print_formats_t, POINTER(gnutls_datum_t)]
+    gnutls_openpgp_crt_print.argtypes = [
+        gnutls_openpgp_crt_t,
+        gnutls_certificate_print_formats_t,
+        POINTER(gnutls_datum_t),
+    ]
     gnutls_openpgp_crt_print.restype = c_int
 
-    gnutls_openpgp_crt_set_preferred_key_id = libgnutls.gnutls_openpgp_crt_set_preferred_key_id
-    gnutls_openpgp_crt_set_preferred_key_id.argtypes = [gnutls_openpgp_crt_t, POINTER(c_ubyte)]
+    gnutls_openpgp_crt_set_preferred_key_id = (
+        libgnutls.gnutls_openpgp_crt_set_preferred_key_id
+    )
+    gnutls_openpgp_crt_set_preferred_key_id.argtypes = [
+        gnutls_openpgp_crt_t,
+        POINTER(c_ubyte),
+    ]
     gnutls_openpgp_crt_set_preferred_key_id.restype = c_int
 
     gnutls_openpgp_crt_verify_ring = libgnutls.gnutls_openpgp_crt_verify_ring
-    gnutls_openpgp_crt_verify_ring.argtypes = [gnutls_openpgp_crt_t, gnutls_openpgp_keyring_t, c_uint, POINTER(c_uint)]
+    gnutls_openpgp_crt_verify_ring.argtypes = [
+        gnutls_openpgp_crt_t,
+        gnutls_openpgp_keyring_t,
+        c_uint,
+        POINTER(c_uint),
+    ]
     gnutls_openpgp_crt_verify_ring.restype = c_int
 
     gnutls_openpgp_crt_verify_self = libgnutls.gnutls_openpgp_crt_verify_self
-    gnutls_openpgp_crt_verify_self.argtypes = [gnutls_openpgp_crt_t, c_uint, POINTER(c_uint)]
+    gnutls_openpgp_crt_verify_self.argtypes = [
+        gnutls_openpgp_crt_t,
+        c_uint,
+        POINTER(c_uint),
+    ]
     gnutls_openpgp_crt_verify_self.restype = c_int
 
     gnutls_openpgp_keyring_check_id = libgnutls.gnutls_openpgp_keyring_check_id
-    gnutls_openpgp_keyring_check_id.argtypes = [gnutls_openpgp_keyring_t, POINTER(c_ubyte), c_uint]
+    gnutls_openpgp_keyring_check_id.argtypes = [
+        gnutls_openpgp_keyring_t,
+        POINTER(c_ubyte),
+        c_uint,
+    ]
     gnutls_openpgp_keyring_check_id.restype = c_int
 
     gnutls_openpgp_keyring_deinit = libgnutls.gnutls_openpgp_keyring_deinit
@@ -1477,15 +2843,25 @@ else:
     gnutls_openpgp_keyring_deinit.restype = None
 
     gnutls_openpgp_keyring_get_crt = libgnutls.gnutls_openpgp_keyring_get_crt
-    gnutls_openpgp_keyring_get_crt.argtypes = [gnutls_openpgp_keyring_t, c_uint, POINTER(gnutls_openpgp_crt_t)]
+    gnutls_openpgp_keyring_get_crt.argtypes = [
+        gnutls_openpgp_keyring_t,
+        c_uint,
+        POINTER(gnutls_openpgp_crt_t),
+    ]
     gnutls_openpgp_keyring_get_crt.restype = c_int
 
-    gnutls_openpgp_keyring_get_crt_count = libgnutls.gnutls_openpgp_keyring_get_crt_count
+    gnutls_openpgp_keyring_get_crt_count = (
+        libgnutls.gnutls_openpgp_keyring_get_crt_count
+    )
     gnutls_openpgp_keyring_get_crt_count.argtypes = [gnutls_openpgp_keyring_t]
     gnutls_openpgp_keyring_get_crt_count.restype = c_int
 
     gnutls_openpgp_keyring_import = libgnutls.gnutls_openpgp_keyring_import
-    gnutls_openpgp_keyring_import.argtypes = [gnutls_openpgp_keyring_t, POINTER(gnutls_datum_t), gnutls_openpgp_crt_fmt_t]
+    gnutls_openpgp_keyring_import.argtypes = [
+        gnutls_openpgp_keyring_t,
+        POINTER(gnutls_datum_t),
+        gnutls_openpgp_crt_fmt_t,
+    ]
     gnutls_openpgp_keyring_import.restype = c_int
 
     gnutls_openpgp_keyring_init = libgnutls.gnutls_openpgp_keyring_init
@@ -1497,121 +2873,268 @@ else:
     gnutls_openpgp_privkey_deinit.restype = None
 
     gnutls_openpgp_privkey_export = libgnutls.gnutls_openpgp_privkey_export
-    gnutls_openpgp_privkey_export.argtypes = [gnutls_openpgp_privkey_t, gnutls_openpgp_crt_fmt_t, c_char_p, c_uint, c_void_p, POINTER(size_t)]
+    gnutls_openpgp_privkey_export.argtypes = [
+        gnutls_openpgp_privkey_t,
+        gnutls_openpgp_crt_fmt_t,
+        c_char_p,
+        c_uint,
+        c_void_p,
+        POINTER(size_t),
+    ]
     gnutls_openpgp_privkey_export.restype = c_int
 
-    gnutls_openpgp_privkey_export_dsa_raw = libgnutls.gnutls_openpgp_privkey_export_dsa_raw
-    gnutls_openpgp_privkey_export_dsa_raw.argtypes = [gnutls_openpgp_privkey_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+    gnutls_openpgp_privkey_export_dsa_raw = (
+        libgnutls.gnutls_openpgp_privkey_export_dsa_raw
+    )
+    gnutls_openpgp_privkey_export_dsa_raw.argtypes = [
+        gnutls_openpgp_privkey_t,
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+    ]
     gnutls_openpgp_privkey_export_dsa_raw.restype = c_int
 
-    gnutls_openpgp_privkey_export_rsa_raw = libgnutls.gnutls_openpgp_privkey_export_rsa_raw
-    gnutls_openpgp_privkey_export_rsa_raw.argtypes = [gnutls_openpgp_privkey_t, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+    gnutls_openpgp_privkey_export_rsa_raw = (
+        libgnutls.gnutls_openpgp_privkey_export_rsa_raw
+    )
+    gnutls_openpgp_privkey_export_rsa_raw.argtypes = [
+        gnutls_openpgp_privkey_t,
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+    ]
     gnutls_openpgp_privkey_export_rsa_raw.restype = c_int
 
-    gnutls_openpgp_privkey_export_subkey_dsa_raw = libgnutls.gnutls_openpgp_privkey_export_subkey_dsa_raw
-    gnutls_openpgp_privkey_export_subkey_dsa_raw.argtypes = [gnutls_openpgp_privkey_t, c_uint, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+    gnutls_openpgp_privkey_export_subkey_dsa_raw = (
+        libgnutls.gnutls_openpgp_privkey_export_subkey_dsa_raw
+    )
+    gnutls_openpgp_privkey_export_subkey_dsa_raw.argtypes = [
+        gnutls_openpgp_privkey_t,
+        c_uint,
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+    ]
     gnutls_openpgp_privkey_export_subkey_dsa_raw.restype = c_int
 
-    gnutls_openpgp_privkey_export_subkey_rsa_raw = libgnutls.gnutls_openpgp_privkey_export_subkey_rsa_raw
-    gnutls_openpgp_privkey_export_subkey_rsa_raw.argtypes = [gnutls_openpgp_privkey_t, c_uint, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+    gnutls_openpgp_privkey_export_subkey_rsa_raw = (
+        libgnutls.gnutls_openpgp_privkey_export_subkey_rsa_raw
+    )
+    gnutls_openpgp_privkey_export_subkey_rsa_raw.argtypes = [
+        gnutls_openpgp_privkey_t,
+        c_uint,
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+    ]
     gnutls_openpgp_privkey_export_subkey_rsa_raw.restype = c_int
 
-    gnutls_openpgp_privkey_get_fingerprint = libgnutls.gnutls_openpgp_privkey_get_fingerprint
-    gnutls_openpgp_privkey_get_fingerprint.argtypes = [gnutls_openpgp_privkey_t, c_void_p, POINTER(size_t)]
+    gnutls_openpgp_privkey_get_fingerprint = (
+        libgnutls.gnutls_openpgp_privkey_get_fingerprint
+    )
+    gnutls_openpgp_privkey_get_fingerprint.argtypes = [
+        gnutls_openpgp_privkey_t,
+        c_void_p,
+        POINTER(size_t),
+    ]
     gnutls_openpgp_privkey_get_fingerprint.restype = c_int
 
     gnutls_openpgp_privkey_get_key_id = libgnutls.gnutls_openpgp_privkey_get_key_id
-    gnutls_openpgp_privkey_get_key_id.argtypes = [gnutls_openpgp_privkey_t, POINTER(c_ubyte)]
+    gnutls_openpgp_privkey_get_key_id.argtypes = [
+        gnutls_openpgp_privkey_t,
+        POINTER(c_ubyte),
+    ]
     gnutls_openpgp_privkey_get_key_id.restype = c_int
 
-    gnutls_openpgp_privkey_get_pk_algorithm = libgnutls.gnutls_openpgp_privkey_get_pk_algorithm
-    gnutls_openpgp_privkey_get_pk_algorithm.argtypes = [gnutls_openpgp_privkey_t, POINTER(c_uint)]
+    gnutls_openpgp_privkey_get_pk_algorithm = (
+        libgnutls.gnutls_openpgp_privkey_get_pk_algorithm
+    )
+    gnutls_openpgp_privkey_get_pk_algorithm.argtypes = [
+        gnutls_openpgp_privkey_t,
+        POINTER(c_uint),
+    ]
     gnutls_openpgp_privkey_get_pk_algorithm.restype = gnutls_pk_algorithm_t
 
-    gnutls_openpgp_privkey_get_preferred_key_id = libgnutls.gnutls_openpgp_privkey_get_preferred_key_id
-    gnutls_openpgp_privkey_get_preferred_key_id.argtypes = [gnutls_openpgp_privkey_t, POINTER(c_ubyte)]
+    gnutls_openpgp_privkey_get_preferred_key_id = (
+        libgnutls.gnutls_openpgp_privkey_get_preferred_key_id
+    )
+    gnutls_openpgp_privkey_get_preferred_key_id.argtypes = [
+        gnutls_openpgp_privkey_t,
+        POINTER(c_ubyte),
+    ]
     gnutls_openpgp_privkey_get_preferred_key_id.restype = c_int
 
-    gnutls_openpgp_privkey_get_revoked_status = libgnutls.gnutls_openpgp_privkey_get_revoked_status
+    gnutls_openpgp_privkey_get_revoked_status = (
+        libgnutls.gnutls_openpgp_privkey_get_revoked_status
+    )
     gnutls_openpgp_privkey_get_revoked_status.argtypes = [gnutls_openpgp_privkey_t]
     gnutls_openpgp_privkey_get_revoked_status.restype = c_int
 
-    gnutls_openpgp_privkey_get_subkey_count = libgnutls.gnutls_openpgp_privkey_get_subkey_count
+    gnutls_openpgp_privkey_get_subkey_count = (
+        libgnutls.gnutls_openpgp_privkey_get_subkey_count
+    )
     gnutls_openpgp_privkey_get_subkey_count.argtypes = [gnutls_openpgp_privkey_t]
     gnutls_openpgp_privkey_get_subkey_count.restype = c_int
 
-    gnutls_openpgp_privkey_get_subkey_creation_time = libgnutls.gnutls_openpgp_privkey_get_subkey_creation_time
-    gnutls_openpgp_privkey_get_subkey_creation_time.argtypes = [gnutls_openpgp_privkey_t, c_uint]
+    gnutls_openpgp_privkey_get_subkey_creation_time = (
+        libgnutls.gnutls_openpgp_privkey_get_subkey_creation_time
+    )
+    gnutls_openpgp_privkey_get_subkey_creation_time.argtypes = [
+        gnutls_openpgp_privkey_t,
+        c_uint,
+    ]
     gnutls_openpgp_privkey_get_subkey_creation_time.restype = time_t
-    gnutls_openpgp_privkey_get_subkey_creation_time.errmsg = "cannot get OpenPGP subkey creation time"
+    gnutls_openpgp_privkey_get_subkey_creation_time.errmsg = (
+        "cannot get OpenPGP subkey creation time"
+    )
 
-    gnutls_openpgp_privkey_get_subkey_expiration_time = libgnutls.gnutls_openpgp_privkey_get_subkey_expiration_time
-    gnutls_openpgp_privkey_get_subkey_expiration_time.argtypes = [gnutls_openpgp_privkey_t, c_uint]
+    gnutls_openpgp_privkey_get_subkey_expiration_time = (
+        libgnutls.gnutls_openpgp_privkey_get_subkey_expiration_time
+    )
+    gnutls_openpgp_privkey_get_subkey_expiration_time.argtypes = [
+        gnutls_openpgp_privkey_t,
+        c_uint,
+    ]
     gnutls_openpgp_privkey_get_subkey_expiration_time.restype = time_t
-    gnutls_openpgp_privkey_get_subkey_expiration_time.errmsg = "cannot get OpenPGP subkey expiration time"
+    gnutls_openpgp_privkey_get_subkey_expiration_time.errmsg = (
+        "cannot get OpenPGP subkey expiration time"
+    )
 
-    gnutls_openpgp_privkey_get_subkey_fingerprint = libgnutls.gnutls_openpgp_privkey_get_subkey_fingerprint
-    gnutls_openpgp_privkey_get_subkey_fingerprint.argtypes = [gnutls_openpgp_privkey_t, c_uint, c_void_p, POINTER(size_t)]
+    gnutls_openpgp_privkey_get_subkey_fingerprint = (
+        libgnutls.gnutls_openpgp_privkey_get_subkey_fingerprint
+    )
+    gnutls_openpgp_privkey_get_subkey_fingerprint.argtypes = [
+        gnutls_openpgp_privkey_t,
+        c_uint,
+        c_void_p,
+        POINTER(size_t),
+    ]
     gnutls_openpgp_privkey_get_subkey_fingerprint.restype = c_int
 
-    gnutls_openpgp_privkey_get_subkey_id = libgnutls.gnutls_openpgp_privkey_get_subkey_id
-    gnutls_openpgp_privkey_get_subkey_id.argtypes = [gnutls_openpgp_privkey_t, c_uint, POINTER(c_ubyte)]
+    gnutls_openpgp_privkey_get_subkey_id = (
+        libgnutls.gnutls_openpgp_privkey_get_subkey_id
+    )
+    gnutls_openpgp_privkey_get_subkey_id.argtypes = [
+        gnutls_openpgp_privkey_t,
+        c_uint,
+        POINTER(c_ubyte),
+    ]
     gnutls_openpgp_privkey_get_subkey_id.restype = c_int
 
-    gnutls_openpgp_privkey_get_subkey_idx = libgnutls.gnutls_openpgp_privkey_get_subkey_idx
-    gnutls_openpgp_privkey_get_subkey_idx.argtypes = [gnutls_openpgp_privkey_t, POINTER(c_ubyte)]
+    gnutls_openpgp_privkey_get_subkey_idx = (
+        libgnutls.gnutls_openpgp_privkey_get_subkey_idx
+    )
+    gnutls_openpgp_privkey_get_subkey_idx.argtypes = [
+        gnutls_openpgp_privkey_t,
+        POINTER(c_ubyte),
+    ]
     gnutls_openpgp_privkey_get_subkey_idx.restype = c_int
 
-    gnutls_openpgp_privkey_get_subkey_pk_algorithm = libgnutls.gnutls_openpgp_privkey_get_subkey_pk_algorithm
-    gnutls_openpgp_privkey_get_subkey_pk_algorithm.argtypes = [gnutls_openpgp_privkey_t, c_uint, POINTER(c_uint)]
+    gnutls_openpgp_privkey_get_subkey_pk_algorithm = (
+        libgnutls.gnutls_openpgp_privkey_get_subkey_pk_algorithm
+    )
+    gnutls_openpgp_privkey_get_subkey_pk_algorithm.argtypes = [
+        gnutls_openpgp_privkey_t,
+        c_uint,
+        POINTER(c_uint),
+    ]
     gnutls_openpgp_privkey_get_subkey_pk_algorithm.restype = gnutls_pk_algorithm_t
 
-    gnutls_openpgp_privkey_get_subkey_revoked_status = libgnutls.gnutls_openpgp_privkey_get_subkey_revoked_status
-    gnutls_openpgp_privkey_get_subkey_revoked_status.argtypes = [gnutls_openpgp_privkey_t, c_uint]
+    gnutls_openpgp_privkey_get_subkey_revoked_status = (
+        libgnutls.gnutls_openpgp_privkey_get_subkey_revoked_status
+    )
+    gnutls_openpgp_privkey_get_subkey_revoked_status.argtypes = [
+        gnutls_openpgp_privkey_t,
+        c_uint,
+    ]
     gnutls_openpgp_privkey_get_subkey_revoked_status.restype = c_int
 
     gnutls_openpgp_privkey_import = libgnutls.gnutls_openpgp_privkey_import
-    gnutls_openpgp_privkey_import.argtypes = [gnutls_openpgp_privkey_t, POINTER(gnutls_datum_t), gnutls_openpgp_crt_fmt_t, c_char_p, c_uint]
+    gnutls_openpgp_privkey_import.argtypes = [
+        gnutls_openpgp_privkey_t,
+        POINTER(gnutls_datum_t),
+        gnutls_openpgp_crt_fmt_t,
+        c_char_p,
+        c_uint,
+    ]
     gnutls_openpgp_privkey_import.restype = c_int
 
     gnutls_openpgp_privkey_init = libgnutls.gnutls_openpgp_privkey_init
     gnutls_openpgp_privkey_init.argtypes = [POINTER(gnutls_openpgp_privkey_t)]
     gnutls_openpgp_privkey_init.restype = c_int
 
-    gnutls_openpgp_privkey_set_preferred_key_id = libgnutls.gnutls_openpgp_privkey_set_preferred_key_id
-    gnutls_openpgp_privkey_set_preferred_key_id.argtypes = [gnutls_openpgp_privkey_t, POINTER(c_ubyte)]
+    gnutls_openpgp_privkey_set_preferred_key_id = (
+        libgnutls.gnutls_openpgp_privkey_set_preferred_key_id
+    )
+    gnutls_openpgp_privkey_set_preferred_key_id.argtypes = [
+        gnutls_openpgp_privkey_t,
+        POINTER(c_ubyte),
+    ]
     gnutls_openpgp_privkey_set_preferred_key_id.restype = c_int
 
     gnutls_openpgp_send_cert = libgnutls.gnutls_openpgp_send_cert
     gnutls_openpgp_send_cert.argtypes = [gnutls_session_t, gnutls_openpgp_crt_status_t]
     gnutls_openpgp_send_cert.restype = None
 
-    gnutls_openpgp_set_recv_key_function = libgnutls.gnutls_openpgp_set_recv_key_function
-    gnutls_openpgp_set_recv_key_function.argtypes = [gnutls_session_t, gnutls_openpgp_recv_key_func]
+    gnutls_openpgp_set_recv_key_function = (
+        libgnutls.gnutls_openpgp_set_recv_key_function
+    )
+    gnutls_openpgp_set_recv_key_function.argtypes = [
+        gnutls_session_t,
+        gnutls_openpgp_recv_key_func,
+    ]
     gnutls_openpgp_set_recv_key_function.restype = None
 
 # The SRP related functions are not always present (some distributions do not compile SRP support into libgnutls)
 #
 
 try:
-    gnutls_srp_allocate_client_credentials = libgnutls.gnutls_srp_allocate_client_credentials
+    gnutls_srp_allocate_client_credentials = (
+        libgnutls.gnutls_srp_allocate_client_credentials
+    )
 except AttributeError:
     pass
 else:
-    gnutls_srp_allocate_client_credentials = libgnutls.gnutls_srp_allocate_client_credentials
-    gnutls_srp_allocate_client_credentials.argtypes = [POINTER(gnutls_srp_client_credentials_t)]
+    gnutls_srp_allocate_client_credentials = (
+        libgnutls.gnutls_srp_allocate_client_credentials
+    )
+    gnutls_srp_allocate_client_credentials.argtypes = [
+        POINTER(gnutls_srp_client_credentials_t)
+    ]
     gnutls_srp_allocate_client_credentials.restype = c_int
 
-    gnutls_srp_allocate_server_credentials = libgnutls.gnutls_srp_allocate_server_credentials
-    gnutls_srp_allocate_server_credentials.argtypes = [POINTER(gnutls_srp_server_credentials_t)]
+    gnutls_srp_allocate_server_credentials = (
+        libgnutls.gnutls_srp_allocate_server_credentials
+    )
+    gnutls_srp_allocate_server_credentials.argtypes = [
+        POINTER(gnutls_srp_server_credentials_t)
+    ]
     gnutls_srp_allocate_server_credentials.restype = c_int
 
     gnutls_srp_base64_decode = libgnutls.gnutls_srp_base64_decode
-    gnutls_srp_base64_decode.argtypes = [POINTER(gnutls_datum_t), c_char_p, POINTER(size_t)]
+    gnutls_srp_base64_decode.argtypes = [
+        POINTER(gnutls_datum_t),
+        c_char_p,
+        POINTER(size_t),
+    ]
     gnutls_srp_base64_decode.restype = c_int
 
     gnutls_srp_base64_encode = libgnutls.gnutls_srp_base64_encode
-    gnutls_srp_base64_encode.argtypes = [POINTER(gnutls_datum_t), c_char_p, POINTER(size_t)]
+    gnutls_srp_base64_encode.argtypes = [
+        POINTER(gnutls_datum_t),
+        c_char_p,
+        POINTER(size_t),
+    ]
     gnutls_srp_base64_encode.restype = c_int
 
     gnutls_srp_free_client_credentials = libgnutls.gnutls_srp_free_client_credentials
@@ -1627,25 +3150,55 @@ else:
     gnutls_srp_server_get_username.restype = c_char_p
 
     gnutls_srp_set_client_credentials = libgnutls.gnutls_srp_set_client_credentials
-    gnutls_srp_set_client_credentials.argtypes = [gnutls_srp_client_credentials_t, c_char_p, c_char_p]
+    gnutls_srp_set_client_credentials.argtypes = [
+        gnutls_srp_client_credentials_t,
+        c_char_p,
+        c_char_p,
+    ]
     gnutls_srp_set_client_credentials.restype = c_int
 
-    gnutls_srp_set_client_credentials_function = libgnutls.gnutls_srp_set_client_credentials_function
-    gnutls_srp_set_client_credentials_function.argtypes = [gnutls_srp_client_credentials_t, gnutls_srp_client_credentials_function]
+    gnutls_srp_set_client_credentials_function = (
+        libgnutls.gnutls_srp_set_client_credentials_function
+    )
+    gnutls_srp_set_client_credentials_function.argtypes = [
+        gnutls_srp_client_credentials_t,
+        gnutls_srp_client_credentials_function,
+    ]
     gnutls_srp_set_client_credentials_function.restype = None
 
-    gnutls_srp_set_server_credentials_file = libgnutls.gnutls_srp_set_server_credentials_file
-    gnutls_srp_set_server_credentials_file.argtypes = [gnutls_srp_server_credentials_t, c_char_p, c_char_p]
+    gnutls_srp_set_server_credentials_file = (
+        libgnutls.gnutls_srp_set_server_credentials_file
+    )
+    gnutls_srp_set_server_credentials_file.argtypes = [
+        gnutls_srp_server_credentials_t,
+        c_char_p,
+        c_char_p,
+    ]
     gnutls_srp_set_server_credentials_file.restype = c_int
 
-    gnutls_srp_set_server_credentials_function = libgnutls.gnutls_srp_set_server_credentials_function
-    gnutls_srp_set_server_credentials_function.argtypes = [gnutls_srp_server_credentials_t, gnutls_srp_server_credentials_function]
+    gnutls_srp_set_server_credentials_function = (
+        libgnutls.gnutls_srp_set_server_credentials_function
+    )
+    gnutls_srp_set_server_credentials_function.argtypes = [
+        gnutls_srp_server_credentials_t,
+        gnutls_srp_server_credentials_function,
+    ]
     gnutls_srp_set_server_credentials_function.restype = None
 
     gnutls_srp_verifier = libgnutls.gnutls_srp_verifier
-    gnutls_srp_verifier.argtypes = [c_char_p, c_char_p, POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t), POINTER(gnutls_datum_t)]
+    gnutls_srp_verifier.argtypes = [
+        c_char_p,
+        c_char_p,
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+        POINTER(gnutls_datum_t),
+    ]
     gnutls_srp_verifier.restype = c_int
 
 
-__all__ = sorted(name for name, obj in sys.modules[__name__].__dict__.iteritems() if name.startswith('gnutls_') and hasattr(obj, 'restype'))
-
+__all__ = sorted(
+    name
+    for name, obj in sys.modules[__name__].__dict__.items()
+    if name.startswith("gnutls_") and hasattr(obj, "restype")
+)

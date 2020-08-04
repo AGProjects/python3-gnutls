@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
 """Synchronous client using python-gnutls"""
 
@@ -27,11 +27,11 @@ try:
     session.connect(('localhost', 10000))
     session.handshake()
     session.verify_peer()
-    session.send("test\r\n")
+    session.send("test")
     buf = session.recv(1024)
-    print 'Received: ', buf.rstrip()
+    print('Received: ', buf.rstrip().decode("utf-8"))
     session.bye()
     session.close()
 except GNUTLSError as e:
-    print('Connection failed: {}'.format(e))
+    print(('Connection failed: {}'.format(e)))
     sys.exit(1)

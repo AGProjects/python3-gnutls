@@ -1,6 +1,8 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
-import sys, os
+import os
+import sys
+
 script_path = os.path.realpath(os.path.dirname(sys.argv[0]))
 gnutls_path = os.path.realpath(os.path.join(script_path, '..'))
 sys.path[0:0] = [gnutls_path]
@@ -13,8 +15,6 @@ from twisted.protocols.basic import LineOnlyReceiver
 from twisted.internet import reactor
 
 from gnutls.crypto import *
-from gnutls.connection import *
-from gnutls.errors import *
 from gnutls.interfaces.twisted import TLSContext, X509Credentials
 
 
@@ -74,6 +74,8 @@ failed = 0
 
 certs_path = os.path.join(gnutls_path, 'examples/certs')
 
+certs_path = os.path.join(gnutls_path, 'examples/certs')
+
 cert = X509Certificate(open(certs_path + '/valid.crt').read())
 key = X509PrivateKey(open(certs_path + '/valid.key').read())
 ca = X509Certificate(open(certs_path + '/ca.pem').read())
@@ -90,15 +92,15 @@ echo_factory = EchoFactory()
 start_time = time()
 
 for x in range(count):
-    reactor.connectTLS(host, port, echo_factory, context)
+    reactor.connectSSL(host, port, echo_factory, context)
 reactor.run()
 
 duration = time() - start_time
 rate = count / duration
-print "time={:.2f} sec; rate={} requests/sec with {}:{}".format(duration, int(rate), host, port)
+print("time={:.2f} sec; rate={} requests/sec with {}:{}".format(duration, int(rate), host, port))
 
 if failed > 0:
-    print "{} out of {} connections have failed".format(failed, count)
+    print("{} out of {} connections have failed".format(failed, count))
 
 if options.memory:
     memory_dump()

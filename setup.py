@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
 import os
 
@@ -7,7 +7,17 @@ from gnutls import __info__ as package_info
 
 
 def find_packages(toplevel):
-    return [directory.replace(os.path.sep, '.') for directory, subdirs, files in os.walk(toplevel) if '__init__.py' in files]
+    return [
+        directory.replace(os.path.sep, '.') for directory, subdirs, files in os.walk(toplevel) if '__init__.py' in files
+    ]
+
+
+def requirements():
+    install_requires = []
+    with open('requirements.txt') as f:
+        for line in f:
+            install_requires.append(line.strip())
+    return install_requires
 
 
 setup(
@@ -23,6 +33,7 @@ setup(
     author_email=package_info.__email__,
 
     platforms=["Platform Independent"],
+    install_requires=requirements(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",

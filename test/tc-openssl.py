@@ -1,6 +1,9 @@
 #!/usr/bin/python2
 
-import sys, os
+import sys
+import os
+from hashlib import md5
+
 script_path = os.path.realpath(os.path.dirname(sys.argv[0]))
 gnutls_path = os.path.realpath(os.path.join(script_path, '..'))
 sys.path[0:0] = [gnutls_path]
@@ -12,7 +15,7 @@ from twisted.internet.protocol import ClientFactory
 from twisted.protocols.basic import LineOnlyReceiver
 from twisted.internet import reactor
 
-import itertools, md5
+import itertools
 from OpenSSL import SSL, crypto
 from twisted.python import reflect, util
 from application import log
@@ -20,7 +23,7 @@ from application import log
 
 # Private - shared between all ServerContextFactories, counts up to
 # provide a unique session id for each context
-_sessionCounter = itertools.count().next
+_sessionCounter = itertools.count().__next__
 
 
 class _SSLApplicationData(object):
@@ -107,18 +110,20 @@ class OpenSSLContextFactory(object):
             return True
         
         ctx.set_verify(verifyFlags, _trackVerificationProblems)
-        
+
         if self.enableSessions:
-            sessionName = md5.md5("%s-%d" % (reflect.qual(self.__class__), _sessionCounter())).hexdigest()
-            ctx.set_session_id(sessionName)
-        
+            sessionName_str = f'{reflect.qual(self.__class__)}-{_sessionCounter()}'
+            sessionName_encode = bytes(sessionName_str, 'utf-8')
+            #sessionName = md5(sessionName_encode).hexdigest()
+            ctx.set_session_id(sessionName_encode)
+            # sessionName = md5("%s-%d" % (reflect.qual(self.__class__), _sessionCounter())).hexdigest()
         return ctx
 
 
 class Certificate(object):
     """Configuration data type. Used to create a OpenSSL.crypto.X509 object from a file given in the configuration file."""
     def __new__(typ, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             try:
                 f = open(value, 'rt')
             except:
@@ -127,19 +132,19 @@ class Certificate(object):
             try:
                 try:
                     return crypto.load_certificate(crypto.FILETYPE_PEM, f.read())
-                except crypto.Error, e:
+                except crypto.Error as e:
                     log.warn("Certificate file '%s' could not be loaded: %s" % (value, str(e)))
                     return None
             finally:
                 f.close()
         else:
-            raise TypeError, 'value should be a string'
+            raise TypeError('value should be a string')
 
 
 class PrivateKey(object):
     """Configuration data type. Used to create a OpenSSL.crypto.PKey object from a file given in the configuration file."""
     def __new__(typ, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             try:
                 f = open(value, 'rt')
             except:
@@ -148,13 +153,13 @@ class PrivateKey(object):
             try:
                 try:
                     return crypto.load_privatekey(crypto.FILETYPE_PEM, f.read())
-                except crypto.Error, e:
+                except crypto.Error as e:
                     log.warn("Private key file '%s' could not be loaded: %s" % (value, str(e)))
                     return None
             finally:
                 f.close()
         else:
-            raise TypeError, 'value should be a string'
+            raise TypeError('value should be a string')
 
 
 class EchoProtocol(LineOnlyReceiver):
@@ -226,7 +231,7 @@ reactor.run()
 
 duration = time() - start_time
 rate = count / duration
-print "time={:.2f} sec; rate={} requests/sec with {}:{}".format(duration, int(rate), host, port)
+print("time={:.2f} sec; rate={} requests/sec with {}:{}".format(duration, int(rate), host, port))
 
 if failed > 0:
-    print "{} out of {} connections have failed".format(failed, count)
+    print("{} out of {} connections have failed".format(failed, count))

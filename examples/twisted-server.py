@@ -1,19 +1,20 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
-"""Asynchronous server using Twisted with GNUTLS"""
+"""
+Asynchronous server using Twisted with GNUTLS
+"""
 
 import sys
 import os
 
 from twisted.internet.protocol import Factory
 from twisted.protocols.basic import LineOnlyReceiver
-from twisted.internet.error import CannotListenError, ConnectionDone
+from twisted.internet.error import ConnectionDone
 from twisted.internet import reactor
 
-from gnutls.constants import *
 from gnutls.crypto import *
-from gnutls.errors import *
 from gnutls.interfaces.twisted import TLSContext, X509Credentials
+
 
 class EchoProtocol(LineOnlyReceiver):
 
@@ -23,12 +24,12 @@ class EchoProtocol(LineOnlyReceiver):
             peer_name = session.peer_certificate.subject
         except AttributeError:
             peer_name = 'Unknown'
-        print '\nNew connection from: %s' % peer_name
-        print 'Protocol:      %s' % session.protocol
-        print 'KX algorithm:  %s' % session.kx_algorithm
-        print 'Cipher:        %s' % session.cipher
-        print 'MAC algorithm: %s' % session.mac_algorithm
-        print 'Compression:   %s' % session.compression
+        print('\nNew connection from: %s' % peer_name)
+        print('Protocol:      %s' % session.protocol)
+        print('KX algorithm:  %s' % session.kx_algorithm)
+        print('Cipher:        %s' % session.cipher)
+        print('MAC algorithm: %s' % session.mac_algorithm)
+        print('Compression:   %s' % session.compression)
 
     def lineReceived(self, line):
         if line == 'quit':
@@ -38,10 +39,13 @@ class EchoProtocol(LineOnlyReceiver):
 
     def connectionLost(self, reason):
         if reason.type != ConnectionDone:
-            print "Connection was lost: %s" % reason.value
+            print("Connection was lost: %s" % reason.value)
+            print("Details: ", reason)
+
 
 class EchoFactory(Factory):
     protocol = EchoProtocol
+
 
 script_path = os.path.realpath(os.path.dirname(sys.argv[0]))
 certs_path = os.path.join(script_path, 'certs')

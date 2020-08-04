@@ -1,6 +1,7 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
 import sys, os
+
 script_path = os.path.realpath(os.path.dirname(sys.argv[0]))
 gnutls_path = os.path.realpath(os.path.join(script_path, '..'))
 sys.path[0:0] = [gnutls_path]
@@ -20,6 +21,7 @@ from gnutls.crypto import *
 from gnutls.errors import *
 from gnutls.interfaces.twisted import TLSContext, X509Credentials
 
+
 class EchoProtocol(LineOnlyReceiver):
 
     def connectionMade(self):
@@ -30,12 +32,12 @@ class EchoProtocol(LineOnlyReceiver):
             peer_name = session.peer_certificate.subject
         except AttributeError:
             peer_name = 'Unknown'
-        print '\nNew connection from:', peer_name
-        print 'Protocol:     ', session.protocol
-        print 'KX algorithm: ', session.kx_algorithm
-        print 'Cipher:       ', session.cipher
-        print 'MAC algorithm:', session.mac_algorithm
-        print 'Compression:  ', session.compression
+        print('\nNew connection from:', peer_name)
+        print('Protocol:     ', session.protocol)
+        print('KX algorithm: ', session.kx_algorithm)
+        print('Cipher:       ', session.cipher)
+        print('MAC algorithm:', session.mac_algorithm)
+        print('Compression:  ', session.compression)
 
     def lineReceived(self, line):
         if line == 'quit':
@@ -45,12 +47,14 @@ class EchoProtocol(LineOnlyReceiver):
 
     def connectionLost(self, reason):
         if options.verbose and reason.type != ConnectionDone:
-            print "Connection was lost:", str(reason.value)
+            print("Connection was lost:", str(reason.value))
+            print("Details :", reason)
 
 
 class EchoFactory(Factory):
     protocol = EchoProtocol
     noisy = False
+
 
 parser = OptionParser()
 parser.add_option("-p", "--port", dest="port", type="int", default=10000,

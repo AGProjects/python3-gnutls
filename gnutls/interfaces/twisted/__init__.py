@@ -1,14 +1,19 @@
+"""
+GNUTLS Twisted interface
+"""
 
-"""GNUTLS Twisted interface"""
-
-__all__ = ['X509Credentials', 'TLSContext', 'connectTLS', 'listenTLS']
+__all__ = ['X509Credentials',
+           'TLSContext',
+           'connectTLS',
+           'listenTLS']
 
 from time import time
 
 from twisted.python import failure
 from twisted.internet import main, base, interfaces, abstract, tcp, error
 
-from zope.interface import implementsOnly, implementedBy
+from zope.interface import implementer
+from zope.interface import implementedBy
 
 from gnutls.connection import ClientSession, ServerSession, ServerSessionFactory
 from gnutls.connection import TLSContext, X509Credentials as _X509Credentials
@@ -17,11 +22,19 @@ from gnutls.errors import *
 
 
 class KeepRunning:
-    """Return this class from a recurrent function to indicate that it should keep running"""
+    """
+    Return this class from a recurrent function
+    to indicate that it should keep running
+    """
     pass
 
+
 class RecurrentCall(object):
-    """Execute a function repeatedly at the given interval, until signaled to stop"""
+    """
+    Execute a function repeatedly at the given interval,
+    until signaled to stop
+    """
+
     def __init__(self, period, func, *args, **kwargs):
         from twisted.internet import reactor
         self.func = func
@@ -31,6 +44,7 @@ class RecurrentCall(object):
         self.now = None
         self.next = None
         self.callid = reactor.callLater(period, self)
+
     def __call__(self):
         from twisted.internet import reactor
         self.callid = None
@@ -41,8 +55,9 @@ class RecurrentCall(object):
             self.now, self.next = self.next, self.next + self.period
         result = self.func(*self.args, **self.kwargs)
         if result is KeepRunning:
-            delay = max(self.next-time(), 0)
+            delay = max(self.next - time(), 0)
             self.callid = reactor.callLater(delay, self)
+
     def cancel(self):
         if self.callid is not None:
             try:
@@ -52,15 +67,20 @@ class RecurrentCall(object):
             self.callid = None
 
 
-class CertificateOK: pass
+class CertificateOK:
+    pass
+
 
 class X509Credentials(_X509Credentials):
     """A Twisted enhanced X509Credentials"""
-    verify_peer = False
-    verify_period = None
+    verify_peer = True
+    verify_period = 300
 
     def verify_callback(self, peer_cert, preverify_status=None):
-        """Verifies the peer certificate and raises an exception if it cannot be accepted"""
+        """
+        Verifies the peer certificate and raises an exception
+        if it cannot be accepted
+        """
         if isinstance(preverify_status, Exception):
             raise preverify_status
         self.check_certificate(peer_cert, cert_name='peer certificate')
@@ -77,7 +97,7 @@ class TLSMixin:
             return tcp.Connection.doRead(self)
         except (OperationWouldBlock, OperationInterrupted):
             return
-        except GNUTLSError, e:
+        except GNUTLSError as e:
             return e
 
     def writeSomeData(self, data):
@@ -87,7 +107,7 @@ class TLSMixin:
             return self.writeSomeData(data)
         except OperationWouldBlock:
             return 0
-        except GNUTLSError, e:
+        except GNUTLSError as e:
             return e
 
     def _sendCloseReason(self, reason):
@@ -117,11 +137,11 @@ class TLSMixin:
         self.stopWriting()
         try:
             self._sendCloseAlert(SHUT_WR)
-        except OperationWouldBlock, e:
+        except OperationWouldBlock as e:
             if self.socket.interrupted_while_writing:
                 self.startWriting()
                 return
-        except Exception, e:
+        except Exception as e:
             return e
         del self.doWrite
 
@@ -134,15 +154,19 @@ class TLSMixin:
 
 
 class TLSClient(TLSMixin, tcp.Client):
-    """Add TLS capabilities to a TCP client"""
-    
-    implementsOnly(interfaces.ISSLTransport, *[i for i in implementedBy(tcp.Client) if i != interfaces.ITLSTransport])
-    
-    def __init__(self, host, port, bindAddress, context, connector, reactor=None, server_name=None):
+    """
+    Add TLS capabilities to a TCP client
+    """
+
+    @implementer(interfaces.ISSLTransport,
+                 *[i for i in implementedBy(tcp.Client) if i != interfaces.ITLSTransport])
+    def __init__(self, host, port, bindAddress, context, connector,
+                 reactor=None, server_name=None):
         self.context = context
         self.server_name = server_name
         self.__watchdog = None
-        tcp.Client.__init__(self, host, port, bindAddress, connector, reactor)
+        tcp.Client.__init__(self, host, port,
+                            bindAddress, connector, reactor)
 
     def createInternetSocket(self):
         sock = tcp.Client.createInternetSocket(self)
@@ -153,7 +177,7 @@ class TLSClient(TLSMixin, tcp.Client):
             return
         try:
             self.context.credentials.verify_callback(self.socket.peer_certificate)
-        except Exception, e:
+        except Exception as e:
             self.loseConnection(e)
             return
         else:
@@ -166,15 +190,15 @@ class TLSClient(TLSMixin, tcp.Client):
             return
         try:
             session.verify_peer()
-        except Exception, e:
+        except Exception as e:
             preverify_status = e
         else:
             preverify_status = CertificateOK
-        
+
         credentials.verify_callback(session.peer_certificate, preverify_status)
-        
         if credentials.verify_period > 0:
-            self.__watchdog = RecurrentCall(credentials.verify_period, self._recurrentVerify)
+            self.__watchdog = RecurrentCall(credentials.verify_period,
+                                            self._recurrentVerify)
 
     def doHandshake(self):
         self.stopWriting()
@@ -184,29 +208,29 @@ class TLSClient(TLSMixin, tcp.Client):
             if self.socket.interrupted_while_writing:
                 self.startWriting()
             return
-        except GNUTLSError, e:
+        except GNUTLSError as e:
             del self.doRead
-            self.failIfNotConnected(err = e)
+            self.failIfNotConnected(err=e)
             return
-        
-        ## reset any references to the old doRead
+
+        # reset any references to the old doRead
         del self.doRead
         self.stopReading()
-        
+
         try:
             self._verifyPeer()
-        except GNUTLSError, e:
+        except GNUTLSError as e:
             self.closeTLSSession(e)
-            self.failIfNotConnected(err = e)
+            self.failIfNotConnected(err=e)
             return
-        except Exception, e:
+        except Exception as e:
             self.closeTLSSession(e)
-            self.failIfNotConnected(err = error.getConnectError(str(e)))
+            self.failIfNotConnected(err=error.getConnectError(str(e)))
             return
-        
-        ## TLS handshake (including certificate verification) finished succesfully
+
+        # TLS handshake (including certificate verification) finished succesfully
         tcp.Client._connectDone(self)
-        
+
     def startTLS(self):
         self.doRead = self.doHandshake
         self.startReading()
@@ -216,7 +240,7 @@ class TLSClient(TLSMixin, tcp.Client):
         self.startTLS()
 
     def loseConnection(self, reason=failure.Failure(main.CONNECTION_DONE)):
-        reason = failure.Failure(reason) # accept python exceptions too
+        reason = failure.Failure(reason)  # accept python exceptions too
         self._close_reason = reason.value
         abstract.FileDescriptor.loseConnection(self, reason)
 
@@ -228,7 +252,8 @@ class TLSClient(TLSMixin, tcp.Client):
 
 
 class TLSConnector(base.BaseConnector):
-    def __init__(self, host, port, factory, context, timeout, bindAddress, reactor=None, server_name=None):
+    def __init__(self, host, port, factory, context, timeout,
+                 bindAddress, reactor=None, server_name=None):
         self.host = host
         self.port = port
         self.bindAddress = bindAddress
@@ -236,29 +261,37 @@ class TLSConnector(base.BaseConnector):
         self.server_name = server_name
         base.BaseConnector.__init__(self, factory, timeout, reactor)
 
+    def getDestination(self):
+        import twisted.internet.address
+        return twisted.internet.address.IPv4Address('TCP', self.host, self.port)
+
     def _makeTransport(self):
-        return TLSClient(self.host, self.port, self.bindAddress, self.context, self, self.reactor, self.server_name)
+        return TLSClient(self.host, self.port, self.bindAddress,
+                         self.context, self, self.reactor, self.server_name)
 
 
 class TLSServer(TLSMixin, tcp.Server):
-    """Add TLS capabilities to a TCP server"""
-    
-    implementsOnly(interfaces.ISSLTransport, *[i for i in implementedBy(tcp.Server) if i != interfaces.ITLSTransport])
-    
+    """
+    Add TLS capabilities to a TCP server
+    """
+
+    @implementer(interfaces.ISSLTransport,
+                 *[i for i in implementedBy(tcp.Server) if i != interfaces.ITLSTransport])
     def __init__(self, sock, protocol, client, server, sessionno, *args, **kw):
         self.__watchdog = None
         self.context = server.context
         tcp.Server.__init__(self, sock, protocol, client, server, sessionno, *args, **kw)
         self.protocol.makeConnection = lambda *args: None
-        self.protocol.transport = self ## because we may call connectionLost without connectionMade
+        self.protocol.transport = self
+        # because we may call connectionLost without connectionMade
         self.startTLS()
 
     def _recurrentVerify(self):
         if not self.connected or self.disconnecting:
             return
         try:
-            self.context.credentials.verify_callback(self.socket.peer_certificate)
-        except Exception, e:
+            self.context.credentials.verify_callback(self.socket.peer_certificate())
+        except Exception as e:
             self.loseConnection(e)
             return
         else:
@@ -271,15 +304,17 @@ class TLSServer(TLSMixin, tcp.Server):
             return
         try:
             session.verify_peer()
-        except Exception, e:
+        except Exception as e:
             preverify_status = e
         else:
             preverify_status = CertificateOK
-        
+
+        # credentials.verify_callback(session.peer_certificate(), preverify_status)
         credentials.verify_callback(session.peer_certificate, preverify_status)
-        
+
         if credentials.verify_period > 0:
-            self.__watchdog = RecurrentCall(credentials.verify_period, self._recurrentVerify)
+            self.__watchdog = RecurrentCall(credentials.verify_period,
+                                            self._recurrentVerify)
 
     def doHandshake(self):
         self.stopWriting()
@@ -289,23 +324,23 @@ class TLSServer(TLSMixin, tcp.Server):
             if self.socket.interrupted_while_writing:
                 self.startWriting()
             return
-        except GNUTLSError, e:
+        except GNUTLSError as e:
             del self.doRead
             return e
-        
-        ## reset any references to the old doRead
+
+        # reset any references to the old doRead
         del self.doRead
         self.stopReading()
         self.startReading()
-        
+
         try:
             self._verifyPeer()
-        except Exception, e:
+        except Exception as e:
             self.loseConnection(e)
             return
-        
-        ## TLS handshake (including certificate verification) finished succesfully
-        
+
+        # TLS handshake (including certificate verification) finished succesfully
+
         del self.protocol.makeConnection
         self.protocol.makeConnection(self)
 
@@ -314,7 +349,7 @@ class TLSServer(TLSMixin, tcp.Server):
         self.startReading()
 
     def loseConnection(self, reason=failure.Failure(main.CONNECTION_DONE)):
-        reason = failure.Failure(reason) # accept python exceptions too
+        reason = failure.Failure(reason)  # accept python exceptions too
         self._close_reason = reason.value
         abstract.FileDescriptor.loseConnection(self, reason)
 
@@ -340,25 +375,28 @@ class TLSPort(tcp.Port):
         return ServerSessionFactory(sock, self.context, self.session_class)
 
 
-def connectTLS(reactor, host, port, factory, context, timeout=30, bindAddress=None, server_name=None):
-    c = TLSConnector(host, port, factory, context, timeout, bindAddress, reactor, server_name)
+def connectTLS(reactor, host, port, factory, context, timeout=30,
+               bindAddress=None, server_name=None):
+    c = TLSConnector(host, port,
+                     factory, context,
+                     timeout, bindAddress,
+                     reactor, server_name)
     c.connect()
     return c
 
 
-def listenTLS(reactor, port, factory, context, backlog=50, interface='', session_class=ServerSession):
-    p = TLSPort(port, factory, context, backlog, interface, reactor, session_class)
+def listenTLS(reactor, port, factory, context, backlog=50,
+              interface='', session_class=ServerSession):
+    p = TLSPort(port, factory, context, backlog,
+                interface, reactor, session_class)
     p.startListening()
     return p
 
-## Add the connectTLS and listenTLS methods to the reactor
 
-import new
+# Add the connectTLS and listenTLS methods to the reactor
+
 from twisted.internet.posixbase import PosixReactorBase
 
-method = new.instancemethod(connectTLS, None, PosixReactorBase)
-setattr(PosixReactorBase, 'connectTLS', method)
+PosixReactorBase.connectTLS = connectTLS.__get__(None, PosixReactorBase)
 
-method = new.instancemethod(listenTLS, None, PosixReactorBase)
-setattr(PosixReactorBase, 'listenTLS', method)
-
+PosixReactorBase.listenTLS = listenTLS.__get__(None, PosixReactorBase)

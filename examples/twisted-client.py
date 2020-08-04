@@ -1,6 +1,8 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
-"""Asynchronous client using Twisted with GNUTLS"""
+"""
+Asynchronous client using Twisted with GNUTLS
+"""
 
 import sys
 import os
@@ -10,30 +12,30 @@ from twisted.internet.protocol import ClientFactory
 from twisted.protocols.basic import LineOnlyReceiver
 from twisted.internet import reactor
 
-from gnutls.constants import *
 from gnutls.crypto import *
-from gnutls.errors import *
-from gnutls.interfaces.twisted import TLSContext, X509Credentials
+from gnutls.interfaces.twisted import TLSContext, connectTLS, X509Credentials
+
 
 class EchoProtocol(LineOnlyReceiver):
 
     def connectionMade(self):
-        self.sendLine('echo')
+        self.sendLine(b'echo')
 
     def lineReceived(self, line):
-        print 'received: %s' % line
+        print('received: %s' % line)
         self.transport.loseConnection()
 
     def connectionLost(self, reason):
         if reason.type != ConnectionDone:
-            print "connection was lost: %s" % reason.value
+            print("connection was lost: %s" % reason.value)
         reactor.stop()
+
 
 class EchoFactory(ClientFactory):
     protocol = EchoProtocol
 
     def clientConnectionFailed(self, connector, err):
-        print "connection failed: %s" % err.value
+        print("connection failed: %s" % err.value)
         reactor.stop()
 
 
@@ -48,5 +50,5 @@ cred = X509Credentials(cert, key, [ca], [crl])
 cred.verify_peer = True
 context = TLSContext(cred, session_parameters="NORMAL:-COMP-ALL:+COMP-DEFLATE:+COMP-NULL")
 
-reactor.connectTLS('localhost', 10000, EchoFactory(), context)
+conn = connectTLS(reactor, 'localhost', 10000, EchoFactory(), context)
 reactor.run()
