@@ -290,7 +290,7 @@ class TLSServer(TLSMixin, tcp.Server):
         if not self.connected or self.disconnecting:
             return
         try:
-            self.context.credentials.verify_callback(self.socket.peer_certificate())
+            self.context.credentials.verify_callback(self.socket.peer_certificate)
         except Exception as e:
             self.loseConnection(e)
             return
@@ -309,7 +309,7 @@ class TLSServer(TLSMixin, tcp.Server):
         else:
             preverify_status = CertificateOK
 
-        # credentials.verify_callback(session.peer_certificate(), preverify_status)
+        # credentials.verify_callback(session.peer_certificae, preverify_status)
         credentials.verify_callback(session.peer_certificate, preverify_status)
 
         if credentials.verify_period > 0:
