@@ -1,18 +1,17 @@
 Source: python3-gnutls
 Section: python
 Priority: optional
-Maintainer: Bibiana Rivadeneira <bibo@ag-projects.com>
+Maintainer: Adrian Georgescu <ag@ag-projects.com>
 Build-Depends: debhelper (>= 11),
                dh-python,
-               python3 (>= 3.7)
+               python3 (>= 3.6.5)
 Standards-Version: 4.5.0
 
 Package: python3-gnutls
 Architecture: all
-Depends: ${python:Depends}, ${misc:Depends},
+Depends: ${python3:Depends}, ${misc:Depends},
          libgnutls30,
          python3-twisted
-Recommends: python3-twisted
 Provides: ${python:Provides}
 Description: Python wrapper for the GnuTLS library
  This package provides a high level object oriented wrapper around
