@@ -493,12 +493,12 @@ class Session(object):
         status = c_uint()
         gnutls_certificate_verify_peers2(self._c_object, byref(status))
         status = status.value
-        if status & GNUTLS_CERT_INVALID:
-            raise CertificateError("peer certificate invalid", self.peer_certificate, self.context)
-        elif status & GNUTLS_CERT_SIGNER_NOT_FOUND:
+        if status & GNUTLS_CERT_SIGNER_NOT_FOUND:
             raise CertificateAuthorityError("peer certificate signer not found", self.peer_certificate, self.context)
         elif status & GNUTLS_CERT_SIGNER_NOT_CA:
             raise CertificateAuthorityError("peer certificate signer is not a CA", self.peer_certificate, self.context)
+        elif status & GNUTLS_CERT_INVALID:
+            raise CertificateError("peer certificate invalid", self.peer_certificate, self.context)
         elif status & GNUTLS_CERT_INSECURE_ALGORITHM:
             raise CertificateSecurityError("peer certificate uses an insecure algorithm ", self.peer_certificate, self.context)
         elif status & GNUTLS_CERT_REVOKED:
