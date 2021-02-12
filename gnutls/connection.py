@@ -365,6 +365,7 @@ class Session(object):
         gnutls_transport_set_ptr(self._c_object, socket.fileno())
         gnutls_handshake_set_private_extensions(self._c_object, 1)
         self.socket = socket
+        self.context = context
         self.credentials = context.credentials
 
     def __del__(self):
@@ -493,17 +494,15 @@ class Session(object):
         gnutls_certificate_verify_peers2(self._c_object, byref(status))
         status = status.value
         if status & GNUTLS_CERT_INVALID:
-            raise CertificateError("peer certificate is invalid")
+            raise CertificateError({"error": "peer certificate invalid", "certificate": self.peer_certificate, "context": self.context})
         elif status & GNUTLS_CERT_SIGNER_NOT_FOUND:
-            raise CertificateAuthorityError("peer certificate signer not found")
+            raise CertificateAuthorityError({"error": "peer certificate signer not found", "certificate": self.peer_certificate, "context": self.context})
         elif status & GNUTLS_CERT_SIGNER_NOT_CA:
-            raise CertificateAuthorityError("peer certificate signer is not a CA")
+            raise CertificateAuthorityError({"error": "peer certificate signer is not a CA", "certificate": self.peer_certificate, "context": self.context})
         elif status & GNUTLS_CERT_INSECURE_ALGORITHM:
-            raise CertificateSecurityError(
-                "peer certificate uses an insecure algorithm"
-            )
+            raise CertificateSecurityError({"error": "peer certificate uses an insecure algorithm ", "certificate": self.peer_certificate, "context": self.context})
         elif status & GNUTLS_CERT_REVOKED:
-            raise CertificateRevokedError("peer certificate was revoked")
+            raise CertificateRevokedError({"error": "peer certificate was revoked", "certificate": self.peer_certificate, "context": self.context})
 
 
 class ClientSession(Session):
