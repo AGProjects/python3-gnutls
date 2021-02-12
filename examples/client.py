@@ -26,10 +26,23 @@ session = ClientSession(sock, context)
 try:
     session.connect(('localhost', 10000))
     session.handshake()
+    peer_cert = session.peer_certificate
+
+    try:
+        peer_name = peer_cert.subject
+    except AttributeError:
+        peer_name = 'Unknown'
+    print('\nConnection to:', peer_name)
+    print('Protocol:     ', session.protocol.decode())
+    print('KX algorithm: ', session.kx_algorithm.decode())
+    print('Cipher:       ', session.cipher.decode())
+    print('MAC algorithm:', session.mac_algorithm.decode())
+    print('Compression:  ', session.compression.decode())
+            
     session.verify_peer()
-    session.send("test")
+    session.send(b"Test data")
     buf = session.recv(1024)
-    print('Received: ', buf.rstrip().decode("utf-8"))
+    print('\nReceived from server: ', buf.rstrip().decode("utf-8"))
     session.bye()
     session.close()
 except GNUTLSError as e:

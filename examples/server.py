@@ -44,11 +44,11 @@ class SessionHandler(Thread):
             except AttributeError:
                 peer_name = 'Unknown'
             print('\nNew connection from:', peer_name)
-            print('Protocol:     ', session.protocol)
-            print('KX algorithm: ', session.kx_algorithm)
-            print('Cipher:       ', session.cipher)
-            print('MAC algorithm:', session.mac_algorithm)
-            print('Compression:  ', session.compression)
+            print('Protocol:     ', session.protocol.decode())
+            print('KX algorithm: ', session.kx_algorithm.decode())
+            print('Cipher:       ', session.cipher.decode())
+            print('MAC algorithm:', session.mac_algorithm.decode())
+            print('Compression:  ', session.compression.decode())
             session.verify_peer()
             cred.check_certificate(peer_cert, cert_name='peer certificate')
         except Exception as e:
@@ -65,7 +65,8 @@ class SessionHandler(Thread):
                             print("Got quit command, closing connection")
                             session.bye()
                             break
-                    session.send(buf)
+                    print("\nReceived from client: %s" % buf.decode())
+                    session.send(b"Hello, I have received this from you: " + buf)
                 except Exception as e:
                     print("Error in reception: ", e)
                     break
