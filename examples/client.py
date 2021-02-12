@@ -17,6 +17,8 @@ cert = X509Certificate(open(certs_path + '/valid.crt').read())
 key = X509PrivateKey(open(certs_path + '/valid.key').read())
 ca_text = open(certs_path + '/ca.pem').read()
 
+#X509Credentials.verify_peer=False
+
 start = False
 ca = []
 for line in ca_text.split("\n"):

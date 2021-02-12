@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 """Synchronous server that handles each connection in a thread"""
 
@@ -25,6 +25,8 @@ sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 ssf = ServerSessionFactory(sock, context)
 ssf.bind(('0.0.0.0', 10000))
 ssf.listen(100)
+
+#X509Credentials.verify_peer=False
 
 
 class SessionHandler(Thread):
