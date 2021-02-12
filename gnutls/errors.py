@@ -31,23 +31,38 @@ class OperationInterrupted(GNUTLSError):
 
 
 class CertificateError(GNUTLSError):
-    pass
+    def __init__(self, error, certificate=None, context=None):
+        self.error = error
+        self.certificate = certificate
+        self.context = context
 
 
 class CertificateAuthorityError(CertificateError):
-    pass
+    def __init__(self, error, certificate=None, context=None):
+        self.error = error
+        self.certificate = certificate
+        self.context = context
 
 
 class CertificateSecurityError(CertificateError):
-    pass
+    def __init__(self, error, certificate=None, context=None):
+        self.error = error
+        self.certificate = certificate
+        self.context = context
 
 
 class CertificateExpiredError(CertificateError):
-    pass
+    def __init__(self, error, certificate=None, context=None):
+        self.error = error
+        self.certificate = certificate
+        self.context = context
 
 
 class CertificateRevokedError(CertificateError):
-    pass
+    def __init__(self, error, certificate=None, context=None):
+        self.error = error
+        self.certificate = certificate
+        self.context = context
 
 
 class RequestedDataNotAvailable(GNUTLSError):
