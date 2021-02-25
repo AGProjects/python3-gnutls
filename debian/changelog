@@ -1,3 +1,16 @@
+python3-gnutls (3.1.8) unstable; urgency=medium
+
+  * Use env python3 path in tests
+  * Fixed parsing X.509 names
+  * Reverse order of certificate tests
+  * Load all CAs in client text
+  * Fixed passing Certificate errors parameters
+  * Return the TLS certificate and context with with failed verification exceptions
+  * Improve test scripts
+  * Fixed packaging
+
+ -- Adrian Georgescu <ag@ag-projects.com>  Thu, 25 Feb 2021 11:49:25 +0100
+
 python3-gnutls (3.1.7) unstable; urgency=medium
 
   * Sync internal version number
