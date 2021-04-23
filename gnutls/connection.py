@@ -144,15 +144,15 @@ class _ServerNameIdentities(dict):
 
     def add(self, identity):
         for name in identity.cert.alternative_names.dns:
-            self[name.lower()] = identity
+            self[name.decode().lower()] = identity
         for ip in identity.cert.alternative_names.ip:
-            self[ip] = identity
+            self[ip.decode()] = identity
         subject = identity.cert.subject
         if subject.CN is not None:
             self[subject.CN.lower()] = identity
 
     def get(self, server_name, default=None):
-        server_name = server_name.lower()
+        server_name = server_name.decode().lower()
         if server_name in self:
             return self[server_name]
         for name in (n for n in self if n.startswith("*.")):
