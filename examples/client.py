@@ -66,7 +66,7 @@ try:
             
     session.verify_peer()
     print('Certificate is verified')
-    session.send(b"Test data")
+    session.send(memoryview(b"Test data"))
     buf = session.recv(1024)
     print('\nReceived from server: ', buf.rstrip().decode("utf-8"))
     session.bye()
