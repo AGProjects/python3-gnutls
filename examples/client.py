@@ -46,7 +46,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 session = ClientSession(sock, context)
 
 try:
-    session.connect(('127.0.0.1', 10000))
+    session.connect(('zlib.net', 443))
     session.handshake()
     peer_cert = session.peer_certificate
 
@@ -66,7 +66,7 @@ try:
             
     session.verify_peer()
     print('Certificate is verified')
-    session.send(b"Test data")
+    session.send(memoryview(b"Test data"))
     buf = session.recv(1024)
     print('\nReceived from server: ', buf.rstrip().decode("utf-8"))
     session.bye()
@@ -74,3 +74,4 @@ try:
 except GNUTLSError as e:
     print(('\nConnection failed: {}'.format(e)))
     sys.exit(1)
+
