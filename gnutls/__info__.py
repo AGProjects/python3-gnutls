@@ -6,7 +6,7 @@ __project__ = "python3-gnutls"
 __summary__ = "Python wrapper for the GnuTLS library"
 __webpage__ = "https://github.com/AGProjects/python3-gnutls"
 
-__version__ = "3.1.8"
+__version__ = "3.1.9"
 
 __author__ = "Dan Pascu"
 __email__ = "support@ag-projects.com"
