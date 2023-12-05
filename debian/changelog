@@ -1,3 +1,9 @@
+python3-gnutls (3.1.11) unstable; urgency=medium
+
+  * Fixed loseConnection to be compatible with twisted
+
+ -- Tijmen de Mes <tijmen@ag-projects.com>  Tue, 05 Dec 2023 16:28:55 +0100
+
 python3-gnutls (3.1.10) unstable; urgency=medium
 
   * Fixed loseConnection to be compatible with twisted
