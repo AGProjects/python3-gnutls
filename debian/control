@@ -5,7 +5,9 @@ Maintainer: Adrian Georgescu <ag@ag-projects.com>
 Uploaders: Tijmen de Mes <tijmen@ag-projects.com>
 Build-Depends: debhelper (>= 11),
                dh-python,
-               python3 (>= 3.6.5)
+               python3 (>= 3.6.5),
+               python3-setuptools (>= 66.1.0),
+               pybuild-plugin-pyproject
 Standards-Version: 4.5.0
 
 Package: python3-gnutls

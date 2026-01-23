@@ -1,0 +1,38 @@
+[build-system]
+requires = [
+  "setuptools >= 66.1.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python3-gnutls"
+description = "Python wrapper for the GnuTLS library"
+license = "LGPL-2.1-or-later"
+readme = { file = "README", content-type = "text/plain" }
+urls = { source = "https://github.com/AGProjects/python3-gnutls" }
+
+authors = [
+	{ name = "Dan Pascu", email = "support@ag-projects.com" }
+]
+
+classifiers = [
+	"Development Status :: 5 - Production/Stable",
+	"Intended Audience :: Developers",
+	"Operating System :: OS Independent",
+	"Programming Language :: Python",
+	"Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+dynamic = ["version", "dependencies", "optional-dependencies"]
+
+[tool.setuptools]
+platforms = ["Platform Independent"]
+
+[tool.setuptools.dynamic]
+version = { attr = "gnutls.__version__" }
+
+# Cannot use attr for description: https://github.com/pypa/setuptools/issues/5053
+#description = { attr = "gnutls.__summary__" }
+
+dependencies = { file = "requirements.txt" }
+optional-dependencies = { tests = { file = "requirements-tests.txt" } }
