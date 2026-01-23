@@ -13,7 +13,6 @@ __all__ = [
 
 from time import time
 
-from twisted.internet import ssl
 from gnutls.library.constants import GNUTLS_SHUT_RDWR as SOCKET_SHUT_RDWR
 from gnutls.constants import CRED_CERTIFICATE
 
