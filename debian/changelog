@@ -1,3 +1,10 @@
+python3-gnutls (3.1.12) unstable; urgency=medium
+
+  * Removed not used import
+  * Switch to setuptools and PEP 621 from distutils
+
+ -- Tijmen de Mes <tijmen@ag-projects.com>  Fri, 23 Jan 2026 15:25:38 +0100
+
 python3-gnutls (3.1.11) unstable; urgency=medium
 
   * Fixed loseConnection to be compatible with twisted
