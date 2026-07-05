@@ -715,6 +715,16 @@ class X509Certificate(object):
     def __del__(self):
         self.__deinit(self._c_object)
 
+    @classmethod
+    def list_from_pem(cls, data):
+        """Return a list of X509Certificate objects, one for each CERTIFICATE
+           block found in the given PEM data (leaf first if the data is an
+           ordered certificate chain, e.g. a fullchain.pem file)."""
+        if isinstance(data, bytes):
+            data = data.decode('ascii', 'ignore')
+        blocks = re.findall('-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----', data, re.DOTALL)
+        return [cls(block.encode()) for block in blocks]
+
     @property
     def subject(self):
         size = c_size_t(256)
@@ -855,11 +865,18 @@ class X509PrivateKey(object):
 
 
 class X509Identity(object):
-    """A X509 identity represents a X509 certificate and private key pair"""
+    """A X509 identity represents a X509 certificate and private key pair,
+       optionally accompanied by the chain of intermediate CA certificates
+       needed to reach a trusted root (leaf certificate excluded)."""
 
-    __slots__ = ("cert", "key")
+    __slots__ = ("cert", "key", "chain", "_cert_array")
 
-    def __init__(self, cert, key):
+    def __init__(self, cert, key, chain=()):
+        self.chain = tuple(chain)
+        certs = (cert,) + self.chain
+        # keep the ctypes array alive for as long as the identity, so it can
+        # be handed to gnutls during the handshake (see _retrieve_certificate)
+        self._cert_array = (gnutls_x509_crt_t * len(certs))(*[c._c_object for c in certs])
         self.cert = cert
         self.key = key
 

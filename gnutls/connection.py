@@ -123,9 +123,11 @@ def _retrieve_certificate(
     if identity is None:
         retr_st.contents.ncerts = 0
     else:
-        retr_st.contents.ncerts = 1
+        # the identity keeps the certificate array (leaf + chain) alive
+        cert_array = identity._cert_array
+        retr_st.contents.ncerts = len(cert_array)
         retr_st.contents.cert_type = GNUTLS_CRT_X509
-        retr_st.contents.cert.x509.contents = identity.cert._c_object
+        retr_st.contents.cert.x509 = cast(cert_array, POINTER(gnutls_x509_crt_t))
         retr_st.contents.key.x509 = identity.key._c_object
     return 0
 
@@ -174,15 +176,28 @@ class X509Credentials(object):
         """
         Credentials contain a X509 certificate, a private key, a list of trusted CAs and
         a list of CRLs (all optional).
+        The certificate may be a single X509Certificate or a list of certificates
+        representing a chain, leaf certificate first, in which case the whole
+        chain is presented to the peer during the TLS handshake.
         An optional list of additional X509 identities can be specified for applications
         that need more that one identity
         """
+        if isinstance(cert, (list, tuple)):
+            cert, chain = (cert[0], tuple(cert[1:])) if cert else (None, ())
+        else:
+            chain = ()
+        self._chain = chain
         if cert and key:
+            certs = (cert,) + chain
+            # the array must stay alive for the lifetime of the credentials
+            self._cert_array = (gnutls_x509_crt_t * len(certs))(*[c._c_object for c in certs])
             gnutls_certificate_set_x509_key(
-                self._c_object, byref(cert._c_object), 1, key._c_object
+                self._c_object, self._cert_array, len(certs), key._c_object
             )
         elif (cert, key) != (None, None):
             raise ValueError("Specify neither or both the certificate and private key")
+        else:
+            self._cert_array = (gnutls_x509_crt_t * 0)()
         gnutls_certificate_set_retrieve_function(self._c_object, _retrieve_certificate)
         self._max_depth = 5
         self._max_bits = 8200
@@ -195,7 +210,7 @@ class X509Credentials(object):
         self.crl_list = crl_list
         self.server_name_identities = _ServerNameIdentities(identities)
         if cert and key:
-            self.server_name_identities.add(X509Identity(cert, key))
+            self.server_name_identities.add(X509Identity(cert, key, chain))
 
     def __del__(self):
         self.__deinit(self._c_object)
@@ -224,6 +239,10 @@ class X509Credentials(object):
     @property
     def cert(self):
         return self._cert
+
+    @property
+    def chain(self):
+        return self._chain
 
     @property
     def key(self):
