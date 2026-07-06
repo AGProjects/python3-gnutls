@@ -1,3 +1,9 @@
+python3-gnutls (3.1.13) unstable; urgency=medium
+
+  * Added support for presenting the full certificate chain during the TLS handshake
+
+ -- Tijmen de Mes <support@ag-projects.com>  Mon, 06 Jul 2026 10:59:59 +0200
+
 python3-gnutls (3.1.12) unstable; urgency=medium
 
   * Removed not used import
