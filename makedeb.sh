@@ -1,40 +1,25 @@
 #!/bin/bash
-
 set -e
 
-# install the build tools and the build dependencies from debian/control
-sudo apt-get install -y --no-install-recommends devscripts equivs python3-build python3-venv
-sudo apt-get build-dep -y --no-install-recommends "$(pwd)"
+distro="${1:-}"
 
-# make sure the debian package version matches the module version
-version=$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' gnutls/__info__.py)
-deb_version=$(dpkg-parsechangelog -S Version)
-if [ "$version" != "$deb_version" ]; then
-    echo
-    echo "error: debian/changelog version ($deb_version) does not match gnutls/__info__.py ($version)"
-    echo "add a changelog entry first, for example:"
-    echo
-    echo "    dch -v $version -D unstable 'New upstream release'"
-    echo
-    exit 1
-fi
+rm -rf dist build
 
-rm -rf dist
-
-# build the source distribution (pyproject.toml or legacy setup.py layout)
-if [ -f pyproject.toml ]; then
-    python3 -m build --sdist
-else
+if [ -f setup.py ]; then
     python3 setup.py sdist
+else
+    python3 -m build --sdist
 fi
-
 cd dist
-tar zxvf *.tar.gz
 
-cd python3*gnutls-*/
+tar zxf *.tar.gz
+cd */
+
+# add distro suffix to the changelog version (like autopackager does),
+# only in the extracted build tree - never in the source repo
+if [ -n "$distro" ] && [ "$distro" != "sid" ]; then
+    sed -i "s/) unstable/$distro) $distro/" debian/changelog
+    head -1 debian/changelog
+fi
 
 debuild --no-sign
-
-echo
-echo "Resulting packages:"
-ls -l ../*.deb 2>/dev/null || true
