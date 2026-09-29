@@ -586,8 +586,9 @@ class ClientSession(Session):
         return self._server_name
 
     def _set_server_name(self, server_name):
+        name = server_name.encode("idna") if isinstance(server_name, str) else server_name
         gnutls_server_name_set(
-            self._c_object, GNUTLS_NAME_DNS, c_char_p(server_name), len(server_name)
+            self._c_object, GNUTLS_NAME_DNS, c_char_p(name), len(name)
         )
         self._server_name = server_name
 
