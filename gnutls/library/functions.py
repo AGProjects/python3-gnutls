@@ -397,6 +397,15 @@ gnutls_certificate_verify_peers3.argtypes = [
 ]
 gnutls_certificate_verify_peers3.restype = c_int
 
+gnutls_certificate_verification_status_print = libgnutls.gnutls_certificate_verification_status_print
+gnutls_certificate_verification_status_print.argtypes = [
+    c_uint,
+    gnutls_certificate_type_t,
+    POINTER(gnutls_datum_t),
+    c_uint,
+]
+gnutls_certificate_verification_status_print.restype = c_int
+
 gnutls_check_version = libgnutls.gnutls_check_version
 gnutls_check_version.argtypes = [c_char_p]
 gnutls_check_version.restype = c_char_p
@@ -602,6 +611,9 @@ gnutls_fingerprint.restype = c_int
 gnutls_global_deinit = libgnutls.gnutls_global_deinit
 gnutls_global_deinit.argtypes = []
 gnutls_global_deinit.restype = None
+
+# gnutls_free is a function pointer variable exported by the library
+gnutls_free = gnutls_free_function.in_dll(libgnutls, "gnutls_free")
 
 gnutls_global_init = libgnutls.gnutls_global_init
 gnutls_global_init.argtypes = []

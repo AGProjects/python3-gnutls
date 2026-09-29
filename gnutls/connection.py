@@ -11,7 +11,7 @@ __all__ = [
     "ServerSessionFactory",
 ]
 
-from time import time
+from time import gmtime, strftime, time
 
 from gnutls.library.constants import GNUTLS_SHUT_RDWR as SOCKET_SHUT_RDWR
 from gnutls.constants import CRED_CERTIFICATE
@@ -48,8 +48,10 @@ from gnutls.library.constants import (
     GNUTLS_A_INSUFFICIENT_SECURITY,
     GNUTLS_AL_FATAL,
     GNUTLS_A_UNKNOWN_CA,
+    GNUTLS_CERT_EXPIRED,
     GNUTLS_CERT_INSECURE_ALGORITHM,
     GNUTLS_CERT_INVALID,
+    GNUTLS_CERT_NOT_ACTIVATED,
     GNUTLS_CERT_REQUEST,
     GNUTLS_CERT_REVOKED,
     GNUTLS_CERT_SIGNER_NOT_CA,
@@ -64,6 +66,7 @@ from gnutls.library.constants import (
 
 from gnutls.library.types import (
     gnutls_certificate_credentials_t,
+    gnutls_datum_t,
     gnutls_session_t,
     gnutls_certificate_retrieve_function,
     gnutls_priority_t,
@@ -82,6 +85,7 @@ from gnutls.library.functions import (
     gnutls_certificate_set_x509_key,
     gnutls_certificate_set_x509_trust,
     gnutls_certificate_type_get,
+    gnutls_certificate_verification_status_print,
     gnutls_certificate_verify_peers2,
     gnutls_cipher_get,
     gnutls_cipher_get_name,
@@ -90,6 +94,7 @@ from gnutls.library.functions import (
     gnutls_credentials_clear,
     gnutls_credentials_set,
     gnutls_deinit,
+    gnutls_free,
     gnutls_handshake,
     gnutls_handshake_set_private_extensions,
     gnutls_init,
@@ -112,6 +117,20 @@ from gnutls.library.functions import (
     gnutls_set_default_priority,
     gnutls_transport_set_ptr,
 )
+
+def _verification_status_description(status):
+    """Return GnuTLS's human readable description of a certificate verification status"""
+    output = gnutls_datum_t()
+    try:
+        gnutls_certificate_verification_status_print(status, GNUTLS_CRT_X509, byref(output), 0)
+    except (GNUTLSError, MemoryError):
+        return "verification status 0x%x" % status
+    try:
+        description = string_at(output.data, output.size).decode(errors="replace").strip()
+    finally:
+        gnutls_free(output.data)
+    return "%s (status 0x%x)" % (description, status)
+
 
 @gnutls_certificate_retrieve_function
 def _retrieve_certificate(
@@ -443,6 +462,18 @@ class Session(object):
         cert = cert_list[0]
         return X509Certificate(string_at(cert.data, cert.size), GNUTLS_X509_FMT_DER)
 
+    @property
+    def peer_certificates(self):
+        """The certificate chain presented by the peer, leaf first"""
+        if gnutls_certificate_type_get(self._c_object) != GNUTLS_CRT_X509:
+            return []
+        list_size = c_uint()
+        cert_list = gnutls_certificate_get_peers(self._c_object, byref(list_size))
+        return [
+            X509Certificate(string_at(cert_list[i].data, cert_list[i].size), GNUTLS_X509_FMT_DER)
+            for i in range(list_size.value)
+        ]
+
     # Status checking after an operation was interrupted (these properties are
     # only useful to check after an operation was interrupted, otherwise their
     # value is meaningless).
@@ -512,16 +543,35 @@ class Session(object):
         gnutls_certificate_verify_peers2(self._c_object, byref(status))
         status = status.value
         if status & GNUTLS_CERT_SIGNER_NOT_FOUND:
-            raise CertificateAuthorityError("peer certificate signer not found", self.peer_certificate, self.context)
+            exception, message = CertificateAuthorityError, "peer certificate signer not found"
         elif status & GNUTLS_CERT_SIGNER_NOT_CA:
-            raise CertificateAuthorityError("peer certificate signer is not a CA", self.peer_certificate, self.context)
-        elif status & GNUTLS_CERT_INVALID:
-            raise CertificateError("peer certificate invalid", self.peer_certificate, self.context)
-        elif status & GNUTLS_CERT_INSECURE_ALGORITHM:
-            raise CertificateSecurityError("peer certificate uses an insecure algorithm ", self.peer_certificate, self.context)
+            exception, message = CertificateAuthorityError, "peer certificate signer is not a CA"
+        elif status & GNUTLS_CERT_EXPIRED:
+            exception, message = CertificateExpiredError, "peer certificate chain has expired" + self._chain_time_errors()
+        elif status & GNUTLS_CERT_NOT_ACTIVATED:
+            exception, message = CertificateExpiredError, "peer certificate chain is not yet activated" + self._chain_time_errors()
         elif status & GNUTLS_CERT_REVOKED:
-            raise CertificateRevokedError("peer certificate was revoked", self.peer_certificate, self.context)
+            exception, message = CertificateRevokedError, "peer certificate was revoked"
+        elif status & GNUTLS_CERT_INSECURE_ALGORITHM:
+            exception, message = CertificateSecurityError, "peer certificate uses an insecure algorithm"
+        elif status & GNUTLS_CERT_INVALID:
+            exception, message = CertificateError, "peer certificate invalid"
+        else:
+            return
+        raise exception("%s: %s" % (message, _verification_status_description(status)), self.peer_certificate, self.context)
 
+    def _chain_time_errors(self):
+        """Describe which certificates presented by the peer are outside their validity period"""
+        now = time()
+        errors = []
+        for cert in self.peer_certificates:
+            if cert.expiration_time < now:
+                errors.append("%s expired on %s" % (cert.subject, strftime("%Y-%m-%d", gmtime(cert.expiration_time))))
+            elif cert.activation_time > now:
+                errors.append("%s is not valid before %s" % (cert.subject, strftime("%Y-%m-%d", gmtime(cert.activation_time))))
+        if not errors:
+            return " (a certificate from the local trust list)"
+        return " (%s)" % ", ".join(errors)
 
 class ClientSession(Session):
     session_type = GNUTLS_CLIENT
