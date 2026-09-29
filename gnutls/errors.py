@@ -31,6 +31,9 @@ class OperationInterrupted(GNUTLSError):
 
 
 class CertificateError(GNUTLSError):
+    peer_address = None  # (host, port) of the peer that presented the certificate, when known
+    server_name = None  # the server name (SNI) that was requested, when known
+
     def __init__(self, error, certificate=None, context=None):
         self.error = error
         self.certificate = certificate

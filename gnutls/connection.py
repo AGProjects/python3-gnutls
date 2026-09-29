@@ -558,7 +558,16 @@ class Session(object):
             exception, message = CertificateError, "peer certificate invalid"
         else:
             return
-        raise exception("%s: %s" % (message, _verification_status_description(status)), self.peer_certificate, self.context)
+        error = exception("%s: %s" % (message, _verification_status_description(status)), self.peer_certificate, self.context)
+        try:
+            error.peer_address = self.socket.getpeername()[:2]
+        except Exception:
+            pass
+        try:
+            error.server_name = self.server_name
+        except Exception:
+            pass
+        raise error
 
     def _chain_time_errors(self):
         """Describe which certificates presented by the peer are outside their validity period"""
