@@ -1,6 +1,5 @@
 import sys
 from ctypes import (
-    addressof,
     cast,
     c_char_p,
     CFUNCTYPE,
@@ -143,10 +142,13 @@ class gnutls_datum_t(Structure):
             self.size = c_uint(len(buf))
 
     def get_string_and_free(self):
-        res = string_at(self.data, self.size)
-        gnutls_free_function(addressof(self.data))
-        self.data = None
-        return res
+        from gnutls.library.functions import gnutls_free  # imported here to avoid a circular import
+        try:
+            return string_at(self.data, self.size)
+        finally:
+            gnutls_free(self.data)
+            self.data = None
+            self.size = 0
 
 
 class gnutls_params_st(Structure):
